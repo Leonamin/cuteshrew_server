@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from . import models
 from .database import engine
-from .routers import community
+from .routers import community, posting
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME)
@@ -20,6 +20,7 @@ def get_application():
     )
 
     _app.include_router(community.router)
+    _app.include_router(posting.router)
 
     return _app
 

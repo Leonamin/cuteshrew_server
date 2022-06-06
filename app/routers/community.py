@@ -10,6 +10,8 @@ router = APIRouter(
     tags=['community']
 )
 
+# 커뮤니티
+
 @router.get('/', response_model=List[schemas.CommunityBase])
 def all(db: Session = Depends(database.get_db)):
     return communityRepo.get_all(db)
@@ -23,3 +25,10 @@ def create(request: schemas.CommunityBase, db: Session = Depends(database.get_db
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def destroy(id: int, db: Session = Depends(database.get_db)):
     return communityRepo.destroy(id, db)
+
+# 나중에 자동으로 page로 이동
+@router.get('/{name}', status_code=status.HTTP_200_OK, response_model=schemas.ShowCommunity)
+def show(name: str, db: Session = Depends(database.get_db)):
+    return communityRepo.show(name, db)
+
+# 커뮤니티 게시글
