@@ -18,3 +18,8 @@ def all(db: Session = Depends(database.get_db)):
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.CommunityBase, db: Session = Depends(database.get_db)):
     return communityRepo.create(request, db)
+
+# 204 에러는 Content-Length를 가질 수 없다
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def destroy(id: int, db: Session = Depends(database.get_db)):
+    return communityRepo.destroy(id, db)
