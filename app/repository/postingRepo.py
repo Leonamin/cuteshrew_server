@@ -47,8 +47,8 @@ def create_post(name: str, reqeust: schemas.PostingBase, db: Session):
     new_post = models.Posting(
         title=reqeust.title,
         body=reqeust.body,
-        published_at=time.time(),
-        updated_at=time.time(),
+        published_at=int(time.time()),
+        updated_at=int(time.time()),
         community_id=community.first().id)
     db.add(new_post)
     db.commit()
@@ -71,6 +71,6 @@ def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Sessi
                             detail=f"Positing with the id {post_id} not found on {name} Community")
 
     posting.update(reqeust.dict())
-    posting.update({'updated_at': time.time()})
+    posting.update({'updated_at': int(time.time())})
     db.commit()
     return 'updated'
