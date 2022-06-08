@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
+
+from app.dependency import Authority
 from .. import models, schemas
 import time
 
@@ -9,7 +11,15 @@ def get_all(db: Session):
     return communities
 
 
-def create(request: schemas.CommunityBase, db: Session):
+def create(request: schemas.CommunityBase, db: Session, request_user: schemas.User):
+    # 유저 검사
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+
+    if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f"User has low authoriy {user.first().authority}")
+
     new_community = models.Community(name=request.name,
                                      showname=request.showname,
                                      type=request.type,
@@ -21,7 +31,14 @@ def create(request: schemas.CommunityBase, db: Session):
     return new_community
 
 
-def destroy(id: int, db: Session):
+def destroy(id: int, db: Session, request_user: schemas.User):
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+
+    if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f"User has low authoriy {user.first().authority}")
+
     community = db.query(models.Community).filter(models.Community.id == id)
 
     if not community.first():

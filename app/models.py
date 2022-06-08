@@ -1,6 +1,7 @@
-from enum import unique
-from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum
 from sqlalchemy.orm import relationship
+
+from app.dependency import Authority
 from .database import Base
 
 
@@ -34,11 +35,11 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     nickname = Column(String, unique=True)
-    email = Column(String)
+    email = Column(String, unique=True)
     password = Column(String)
 
     # 권한 어드민 일반 등
-    authority = Column(Integer)
+    authority = Column(Enum(Authority))
 
     created_at = Column(BigInteger)
 

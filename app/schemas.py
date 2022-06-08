@@ -1,5 +1,8 @@
+from enum import Enum
 from typing import List, Union
 from pydantic import BaseModel
+
+from app.dependency import Authority
 
 
 class CommunityBase(BaseModel):
@@ -35,8 +38,7 @@ class User(BaseModel):
     email: str
     password: str
 
-    authority: int
-    created_at: int
+    authority: Authority
 
     class Config():
         orm_mode = True
@@ -47,7 +49,7 @@ class UserInformation(BaseModel):
     email: str
     password: str
 
-    authority: int
+    authority: Authority
     created_at: int
 
     postings: List[PostingBase]

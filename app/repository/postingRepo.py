@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
+from app.dependency import Authority
+
+from app.oauth2 import get_current_user
 from .. import models, schemas
 import time
 
@@ -37,26 +40,36 @@ def get_post(name: str, post_id: int, db: Session):
     return posting
 
 
-def create_post(name: str, reqeust: schemas.PostingBase, db: Session):
+def create_post(name: str, reqeust: schemas.PostingBase, db: Session, request_user: schemas.User):
     community = db.query(models.Community).filter(
         models.Community.name == name)
     if not community.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Community with the name {name} not found")
 
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+
+    # TODO 게시판 허용 권한 검사
+    # if not user.first().authority >= community.first().authority:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+    #                         detail=f"User has low authoriy {user.first().authority}")
+
     new_post = models.Posting(
         title=reqeust.title,
         body=reqeust.body,
         published_at=int(time.time()),
         updated_at=int(time.time()),
-        community_id=community.first().id)
+        community_id=community.first().id,
+        user_id=user.first().id
+    )
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
     return new_post
 
 
-def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Session):
+def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Session, request_user: schemas.User):
     community = db.query(models.Community).filter(
         models.Community.name == name)
     if not community.first():
@@ -69,6 +82,14 @@ def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Sessi
     if not posting.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Positing with the id {post_id} not found on {name} Community")
+
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+
+    if not user.first().id == posting.first().user_id:
+        if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail=f"User has low authoriy {user.first().authority}")
 
     posting.update(reqeust.dict())
     posting.update({'updated_at': int(time.time())})
