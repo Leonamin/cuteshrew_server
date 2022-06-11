@@ -14,7 +14,7 @@ router = APIRouter(
 # 커뮤니티
 
 
-@router.get('/', response_model=List[schemas.CommunityBase])
+@router.get('/', response_model=List[schemas.ShowCommunity])
 def all(db: Session = Depends(database.get_db)):
     return communityRepo.get_all(db)
 

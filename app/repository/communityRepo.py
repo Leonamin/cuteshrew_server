@@ -7,7 +7,15 @@ import time
 
 
 def get_all(db: Session):
-    communities = db.query(models.Community).all()
+
+    # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
+    # I want to find a better code than this!
+    communities = db.query(models.Community).limit(5).all()
+
+    for i in range(0, len(communities)):
+        communities[i].postings = db.query(models.Posting).filter(
+            models.Posting.community_id == communities[i].id).limit(5).all()
+
     return communities
 
 
@@ -52,9 +60,16 @@ def destroy(id: int, db: Session, request_user: schemas.User):
 
 
 def show(name: str, db: Session):
+
     community = db.query(models.Community).filter(
         models.Community.name == name).first()
     if not community:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
                             'detail': f"Community with the name {name} is not available"})
+
+    # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
+    # I want to find a better code than this!
+    community.postings = db.query(models.Posting).filter(
+        models.Posting.community_id == community.id).limit(5).all()
+
     return community

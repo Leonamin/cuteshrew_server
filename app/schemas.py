@@ -1,5 +1,5 @@
 from typing import List, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.dependency import Authority
 
@@ -21,12 +21,19 @@ class PostingBase(BaseModel):
         orm_mode = True
 
 
+class PostingPreview(BaseModel):
+    title: str
+
+    class Config():
+        orm_mode = True
+
+
 class ShowCommunity(CommunityBase):
     showname: str
-    type: int
+    authority: Authority
     created_at = int
     published_at = int
-    postings: List[PostingBase]
+    postings: List[PostingPreview]
 
     class Config():
         orm_mode = True
