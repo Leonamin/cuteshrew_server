@@ -16,13 +16,13 @@ def create(request: schemas.CommunityBase, db: Session, request_user: schemas.Us
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
 
-    if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+    if not (user.first().authority.value >= Authority.SUB_ADMIN.value):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f"User has low authoriy {user.first().authority}")
+                            detail=f"User has low authority {user.first().authority}")
 
     new_community = models.Community(name=request.name,
                                      showname=request.showname,
-                                     type=request.type,
+                                     authority=request.authority,
                                      created_at=int(time.time()),
                                      published_at=int(time.time()))
     db.add(new_community)
@@ -35,7 +35,7 @@ def destroy(id: int, db: Session, request_user: schemas.User):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
 
-    if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+    if not (user.first().authority.value >= Authority.SUB_ADMIN.value):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=f"User has low authoriy {user.first().authority}")
 

@@ -10,7 +10,8 @@ class Community(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     showname = Column(String)
-    type = Column(Integer)
+    # 권한 어드민 일반 등
+    authority = Column(Enum(Authority))
     created_at = Column(BigInteger)
     published_at = Column(BigInteger)
 

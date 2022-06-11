@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List, Union
 from pydantic import BaseModel
 
@@ -8,7 +7,7 @@ from app.dependency import Authority
 class CommunityBase(BaseModel):
     name: str
     showname: str
-    type: int
+    authority: Authority
 
     class Config():
         orm_mode = True

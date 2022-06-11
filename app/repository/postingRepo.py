@@ -51,9 +51,9 @@ def create_post(name: str, reqeust: schemas.PostingBase, db: Session, request_us
         models.User.email == request_user.email)
 
     # TODO 게시판 허용 권한 검사
-    # if not user.first().authority >= community.first().authority:
-    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-    #                         detail=f"User has low authoriy {user.first().authority}")
+    if not (user.first().authority.value >= community.first().authority.value):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=f"User has low authoriy {user.first().authority}")
 
     new_post = models.Posting(
         title=reqeust.title,
@@ -87,7 +87,7 @@ def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Sessi
         models.User.email == request_user.email)
 
     if not user.first().id == posting.first().user_id:
-        if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
+        if not user.first().authority.value >= Authority.SUB_ADMIN.value:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail=f"User has low authoriy {user.first().authority}")
 
