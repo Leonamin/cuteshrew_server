@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 def get_all(name: str, db: Session = Depends(database.get_db)):
     return postingRepo.get_all(name, db)
 
@@ -22,7 +22,7 @@ def get_post(name: str, post_id: int, db: Session = Depends(database.get_db)):
     return postingRepo.get_post(name, post_id, db)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_post(name: str, request: schemas.PostingBase, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     return postingRepo.create_post(name, request, db, current_user)
 

@@ -14,14 +14,14 @@ router = APIRouter(
 # 커뮤니티
 
 
-@router.get('/', response_model=List[schemas.ShowCommunity])
+@router.get('', response_model=List[schemas.ShowCommunity])
 def all(db: Session = Depends(database.get_db)):
     return communityRepo.get_all(db)
 
 # TODO 어드민만 생성 가능하게 변경
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post('', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.CommunityBase, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     print(current_user)
     return communityRepo.create(request, db, current_user)
