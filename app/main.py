@@ -6,6 +6,8 @@ from . import models
 from .database import engine
 from .routers import community, posting, authentication, user
 
+from fastapi.staticfiles import StaticFiles
+
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME)
@@ -13,9 +15,15 @@ def get_application():
     models.Base.metadata.create_all(bind=engine)
 
     _app.add_middleware(
+        # FIXME allow origins 때문에 flutter에서 수신이 안됨 왜그러는지?
+        # CORSMiddleware,
+        # allow_origins=[str(origin)
+        #                for origin in settings.BACKEND_CORS_ORIGINS],
+        # allow_credentials=True,
+        # allow_methods=["*"],
+        # allow_headers=["*"],
         CORSMiddleware,
-        allow_origins=[str(origin)
-                       for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -30,3 +38,4 @@ def get_application():
 
 
 app = get_application()
+app.mount("/", StaticFiles(directory="web"), name="web")
