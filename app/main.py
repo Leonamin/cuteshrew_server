@@ -7,6 +7,7 @@ from .database import engine
 from .routers import community, posting, authentication, user
 
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
 
 
 def get_application():
@@ -38,4 +39,10 @@ def get_application():
 
 
 app = get_application()
+
+
+@app.get("/")
+async def index():
+    return FileResponse('web/index.html', media_type='text/html')
+
 app.mount("/", StaticFiles(directory="web"), name="web")

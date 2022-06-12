@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
 
@@ -14,7 +15,7 @@ def get_all(db: Session):
 
     for i in range(0, len(communities)):
         communities[i].postings = db.query(models.Posting).filter(
-            models.Posting.community_id == communities[i].id).limit(5).all()
+            models.Posting.community_id == communities[i].id).order_by(models.Posting.id.desc()).limit(5).all()
 
     return communities
 
