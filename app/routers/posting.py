@@ -17,9 +17,9 @@ def get_all(name: str, db: Session = Depends(database.get_db)):
     return postingRepo.get_all(name, db)
 
 
-@router.get("/{id}")
-def get_post(name: str, post_id: int, db: Session = Depends(database.get_db)):
-    return postingRepo.get_post(name, post_id, db)
+@router.get("/{id}", response_model=schemas.PostingBase)
+def get_post(name: str, id: int, db: Session = Depends(database.get_db)):
+    return postingRepo.get_post(name, id, db)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)

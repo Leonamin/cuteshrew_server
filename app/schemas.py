@@ -14,6 +14,7 @@ class CommunityBase(BaseModel):
 
 
 class PostingBase(BaseModel):
+    id: int
     title: str
     body: str
 
@@ -22,6 +23,7 @@ class PostingBase(BaseModel):
 
 
 class PostingPreview(BaseModel):
+    id: int
     title: str
 
     class Config():
@@ -29,6 +31,7 @@ class PostingPreview(BaseModel):
 
 
 class ShowCommunity(CommunityBase):
+    id: int
     showname: str
     authority: Authority
     created_at = int

@@ -37,7 +37,7 @@ def get_post(name: str, post_id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Positing with the id {post_id} not found on {name} Community")
 
-    return posting
+    return posting.first()
 
 
 def create_post(name: str, reqeust: schemas.PostingBase, db: Session, request_user: schemas.User):
