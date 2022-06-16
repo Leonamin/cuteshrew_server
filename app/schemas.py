@@ -50,6 +50,15 @@ class ShowCommunity(CommunityBase):
         orm_mode = True
 
 
+class UserCreate(BaseModel):
+    nickname: str
+    email: str
+    password: str
+
+    class Config():
+        orm_mode = True
+
+
 class User(BaseModel):
     nickname: str
     email: str
