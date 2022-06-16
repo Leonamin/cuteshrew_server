@@ -71,6 +71,6 @@ def show(name: str, db: Session):
     # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
     # I want to find a better code than this!
     community.postings = db.query(models.Posting).filter(
-        models.Posting.community_id == community.id).limit(5).all()
+        models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
 
     return community

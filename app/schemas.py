@@ -30,6 +30,14 @@ class PostingPreview(BaseModel):
         orm_mode = True
 
 
+class PostingCreate(BaseModel):
+    title: str
+    body: str
+
+    class Config():
+        orm_mode = True
+
+
 class ShowCommunity(CommunityBase):
     id: int
     showname: str

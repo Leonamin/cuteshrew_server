@@ -40,7 +40,7 @@ def get_post(name: str, post_id: int, db: Session):
     return posting.first()
 
 
-def create_post(name: str, reqeust: schemas.PostingBase, db: Session, request_user: schemas.User):
+def create_post(name: str, reqeust: schemas.PostingCreate, db: Session, request_user: schemas.User):
     community = db.query(models.Community).filter(
         models.Community.name == name)
     if not community.first():
@@ -66,10 +66,10 @@ def create_post(name: str, reqeust: schemas.PostingBase, db: Session, request_us
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return new_post
+    return "Post is created!"
 
 
-def update_post(name: str, post_id: int, reqeust: schemas.PostingBase, db: Session, request_user: schemas.User):
+def update_post(name: str, post_id: int, reqeust: schemas.PostingCreate, db: Session, request_user: schemas.User):
     community = db.query(models.Community).filter(
         models.Community.name == name)
     if not community.first():
