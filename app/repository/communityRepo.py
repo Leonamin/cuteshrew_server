@@ -7,17 +7,35 @@ from .. import models, schemas
 import time
 
 
-def get_all(db: Session):
+def get_all(community_count: int, db: Session):
 
     # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
     # I want to find a better code than this!
-    communities = db.query(models.Community).limit(5).all()
+    communities = db.query(models.Community).limit(community_num).all()
 
     for i in range(0, len(communities)):
         communities[i].postings = db.query(models.Posting).filter(
             models.Posting.community_id == communities[i].id).order_by(models.Posting.id.desc()).limit(5).all()
 
     return communities
+
+
+def get_page(name: str, page_num: int, count_per_page: int, db: Session):
+
+    community = db.query(models.Community).filter(
+        models.Community.name == name).first()
+    if not community:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
+                            'detail': f"Community with the name {name} is not available"})
+
+    community.postings = db.query(models.Posting).filter(
+        models.Posting.community_id == community.id)\
+        .order_by(models.Posting.id.desc())\
+        .offset((page_num - 1) * count_per_page)\
+        .limit(count_per_page)\
+        .all()
+
+    return community
 
 
 def create(request: schemas.CommunityBase, db: Session, request_user: schemas.User):
@@ -68,8 +86,6 @@ def show(name: str, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
                             'detail': f"Community with the name {name} is not available"})
 
-    # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
-    # I want to find a better code than this!
     community.postings = db.query(models.Posting).filter(
         models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
 

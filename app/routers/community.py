@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
@@ -10,13 +10,15 @@ router = APIRouter(
     prefix="/community",
     tags=['community']
 )
+default_community_count = 5
+default_count_per_page = 15
 
 # 커뮤니티
 
 
 @router.get('', response_model=List[schemas.ShowCommunity])
-def all(db: Session = Depends(database.get_db)):
-    return communityRepo.get_all(db)
+def all(community_count: Optional[int] = default_community_count, db: Session = Depends(database.get_db)):
+    return communityRepo.get_all(community_count, db)
 
 # TODO 어드민만 생성 가능하게 변경
 
@@ -39,5 +41,10 @@ def destroy(id: int, db: Session = Depends(database.get_db), current_user: schem
 @router.get('/{name}', status_code=status.HTTP_200_OK, response_model=schemas.ShowCommunity)
 def show(name: str, db: Session = Depends(database.get_db)):
     return communityRepo.show(name, db)
+
+
+@router.get('/{name}/page/{page_num}', response_model=schemas.ShowCommunity)
+def get_page(name: str, page_num: int, count_per_page: Optional[int] = default_count_per_page, db: Session = Depends(database.get_db)):
+    return communityRepo.get_page(name, page_num, count_per_page, db)
 
 # 커뮤니티 게시글
