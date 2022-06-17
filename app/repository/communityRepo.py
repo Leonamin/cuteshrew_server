@@ -11,7 +11,7 @@ def get_all(community_count: int, db: Session):
 
     # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
     # I want to find a better code than this!
-    communities = db.query(models.Community).limit(community_num).all()
+    communities = db.query(models.Community).limit(community_count).all()
 
     for i in range(0, len(communities)):
         communities[i].postings = db.query(models.Posting).filter(
