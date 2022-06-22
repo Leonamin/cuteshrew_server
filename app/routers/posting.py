@@ -30,5 +30,5 @@ def create_post(name: str, request: schemas.PostingCreate, db: Session = Depends
 
 
 @router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update_post(name: str, post_id: int, request: schemas.PostingCreate, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
+def update_post(name: str, id: int, request: schemas.PostingCreate, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     return postingRepo.update_post(name, post_id, request, db, current_user)
