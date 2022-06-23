@@ -95,3 +95,30 @@ def update_post(name: str, post_id: int, reqeust: schemas.PostingCreate, db: Ses
     posting.update({'updated_at': int(time.time())})
     db.commit()
     return 'updated'
+
+
+def delete_post(name: str, post_id: int, db: Session, request_user: schemas.User):
+    community = db.query(models.Community).filter(
+        models.Community.name == name)
+    if not community.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Community with the name {name} not found")
+
+    posting = db.query(models.Posting).filter(
+        models.Posting.community_id == community.first().id, models.Posting.id == post_id)
+
+    if not posting.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Positing with the id {post_id} not found on {name} Community")
+
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+
+    if not user.first().id == posting.first().user_id:
+        if not user.first().authority.value >= Authority.SUB_ADMIN.value:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail=f"User has low authoriy {user.first().authority}")
+
+    posting.delete(synchronize_session=False)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
