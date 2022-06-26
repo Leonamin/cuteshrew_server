@@ -1,21 +1,8 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum, select, func
+from sqlalchemy.orm import relationship, column_property
 
 from app.dependency import Authority
 from .database import Base
-
-
-class Community(Base):
-    __tablename__ = "communities"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    showname = Column(String)
-    # 권한 어드민 일반 등
-    authority = Column(Enum(Authority))
-    created_at = Column(BigInteger)
-    published_at = Column(BigInteger)
-
-    postings = relationship("Posting", back_populates="own_community")
 
 
 class Posting(Base):
@@ -46,3 +33,18 @@ class User(Base):
 
     # 작성한 포스팅
     postings = relationship("Posting", back_populates="creator")
+
+
+class Community(Base):
+    __tablename__ = "communities"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    showname = Column(String)
+    # 권한 어드민 일반 등
+    authority = Column(Enum(Authority))
+    created_at = Column(BigInteger)
+    published_at = Column(BigInteger)
+
+    postings = relationship("Posting", back_populates="own_community")
+    postings_count = column_property(
+        select([func.count(Posting.id)]).scalar_subquery())

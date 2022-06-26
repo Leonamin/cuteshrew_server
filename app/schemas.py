@@ -42,9 +42,10 @@ class ShowCommunity(CommunityBase):
     id: int
     showname: str
     authority: Authority
-    created_at = int
-    published_at = int
+    created_at: int
+    published_at: int
     postings: List[PostingPreview]
+    postings_count: int
 
     class Config():
         orm_mode = True
