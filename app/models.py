@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum, select, func
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum, select, func, Boolean
 from sqlalchemy.orm import relationship, column_property
 
 from app.dependency import Authority
@@ -14,6 +14,8 @@ class Posting(Base):
     updated_at = Column(BigInteger)
     community_id = Column(Integer, ForeignKey('communities.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
+    is_locked = Column(Boolean)
+    password = Column(String)
 
     own_community = relationship("Community", back_populates="postings")
     creator = relationship("User", back_populates="postings")

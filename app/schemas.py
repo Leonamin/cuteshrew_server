@@ -17,6 +17,7 @@ class PostingBase(BaseModel):
     id: int
     title: str
     body: str
+    is_locked: bool
 
     class Config():
         orm_mode = True
@@ -25,6 +26,7 @@ class PostingBase(BaseModel):
 class PostingPreview(BaseModel):
     id: int
     title: str
+    is_locked: bool
 
     class Config():
         orm_mode = True
@@ -33,6 +35,8 @@ class PostingPreview(BaseModel):
 class PostingCreate(BaseModel):
     title: str
     body: str
+    is_locked: bool
+    password: str
 
     class Config():
         orm_mode = True

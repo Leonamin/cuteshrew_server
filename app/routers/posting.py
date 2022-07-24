@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
@@ -18,8 +18,8 @@ def get_all(name: str, db: Session = Depends(database.get_db)):
 
 
 @router.get("/{id}", response_model=schemas.PostingBase)
-def get_post(name: str, id: int, db: Session = Depends(database.get_db)):
-    return postingRepo.get_post(name, id, db)
+def get_post(name: str, id: int, password: Optional[str] = None, db: Session = Depends(database.get_db)):
+    return postingRepo.get_post(name, id, password, db)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
