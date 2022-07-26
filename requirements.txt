@@ -7,3 +7,4 @@ python-jose
 python-multipart
 pydantic[dotenv]
 autopep8
+alembic
