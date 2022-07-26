@@ -22,6 +22,9 @@ depends_on = None
 
 def upgrade() -> None:
     op.execute('''
+                DELETE FROM users WHERE ("id" = "1")
+    ''')
+    op.execute('''
                 INSERT INTO users (id, nickname, email, password, authority, created_at)
                 VALUES (1, 'admin', 'admin', '{0}', 'GOD', {1}); '''.format(Hash.bcrypt('admin'), int(time.time())))
 
