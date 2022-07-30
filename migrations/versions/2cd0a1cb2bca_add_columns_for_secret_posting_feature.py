@@ -20,7 +20,7 @@ def upgrade() -> None:
     op.add_column('postings', sa.Column('is_locked', sa.Boolean()))
     op.add_column('postings', sa.Column('password', sa.String()))
 
-    op.execute("UPDATE postings SET is_locked = 1")
+    op.execute("UPDATE postings SET is_locked = 0")
     # op.alter_column('postings', 'is_locked', nullable=False)
 
 
