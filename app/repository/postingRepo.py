@@ -37,9 +37,10 @@ def get_post(name: str, post_id: int, password: str, db: Session):
     if not posting.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Posting with the id {post_id} not found on {name} Community")
+    # https://auth0.com/blog/forbidden-unauthorized-http-status-codes/
     if posting.first().is_locked:
         if password == None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail=f"need password")
         if not Hash.verify(posting.first().password, password):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
