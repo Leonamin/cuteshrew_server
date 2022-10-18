@@ -18,6 +18,8 @@ class PostingBase(BaseModel):
     title: str
     body: str
     is_locked: bool
+    published_at: int
+    updated_at: int
 
     class Config():
         orm_mode = True
