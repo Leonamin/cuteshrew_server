@@ -103,3 +103,13 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Union[str, None] = None
+
+
+class Comment(BaseModel):
+    id: int
+    user_id: int
+    comment: str
+    post_id: int
+    comment_class: int
+    order: int
+    group_id: int
