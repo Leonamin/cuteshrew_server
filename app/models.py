@@ -59,6 +59,8 @@ class Comment(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     # 댓글 내용
     comment = Column(String)
+    # 생성 일자
+    created_at = Column(BigInteger)
     # 댓글이 등록된 포스팅
     post_id = Column(Integer, ForeignKey('postings.id'))
     # 댓글과 대댓글 계층

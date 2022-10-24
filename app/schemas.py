@@ -109,7 +109,13 @@ class Comment(BaseModel):
     id: int
     user_id: int
     comment: str
+    created_at: int
     post_id: int
     comment_class: int
     order: int
+    group_id: int
+
+
+class CommentCreate(BaseModel):
+    comment: str
     group_id: int

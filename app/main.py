@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from . import models
 from .database import engine
-from .routers import community, posting, authentication, user
+from .routers import community, posting, authentication, user, comment
 
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -34,6 +34,7 @@ def get_application():
     _app.include_router(posting.router)
     _app.include_router(user.router)
     _app.include_router(authentication.router)
+    _app.include_router(comment.router)
 
     return _app
 
