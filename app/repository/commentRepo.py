@@ -43,7 +43,7 @@ def create_comment(post_id: int, request: schemas.CommentCreate, db: Session, re
         comment=request.comment,
         created_at=int(time.time()),
         post_id=post_id,
-        comment_class=1,
+        comment_class=0,
         order=0,
         group_id=0
     )
@@ -63,5 +63,38 @@ def create_comment(post_id: int, request: schemas.CommentCreate, db: Session, re
     return 'created'
 
 
-def create_reply(request: schemas.Comment, db: Session, request_user: schemas.User):
-    pass
+def create_reply(post_id: int, group_id: int, request: schemas.CommentCreate, db: Session, request_user: schemas.User):
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+    if not user.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User name: {request_user.nickname}, email: {request_user.email} not found")
+
+    posting = db.query(models.Posting).filter(
+        models.Posting.id == post_id
+    )
+
+    if not posting.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Posting number: {post_id} not found")
+
+    order_num = db.query(models.Comment)\
+        .filter(models.Comment.post_id == post_id,
+                models.Comment.group_id == group_id)\
+        .order_by(models.Comment.order.desc()).first().order
+
+    print(f"order num= {order_num}")
+
+    new_comment = models.Comment(
+        user_id=user.first().id,
+        comment=request.comment,
+        created_at=int(time.time()),
+        post_id=post_id,
+        comment_class=1,
+        order=order_num+1,
+        group_id=group_id
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return 'created'

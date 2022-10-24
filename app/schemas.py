@@ -118,4 +118,3 @@ class Comment(BaseModel):
 
 class CommentCreate(BaseModel):
     comment: str
-    group_id: int
