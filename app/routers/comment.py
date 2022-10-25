@@ -25,3 +25,13 @@ def create_comment(community_name: str, post_id: int, request: schemas.CommentCr
 @router.post("/{group_id}", status_code=status.HTTP_201_CREATED)
 def create_reply(community_name: str, post_id: int, group_id: int, request: schemas.CommentCreate, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     return commentRepo.create_reply(post_id, group_id, request, db, current_user)
+
+
+@router.put("/{comment_id}", status_code=status.HTTP_201_CREATED)
+def update_comment(community_name: str, post_id: int, comment_id: int, request: schemas.CommentCreate, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
+    return commentRepo.update_comment(post_id, comment_id, request, db, current_user)
+
+
+@router.delete('/{comment_id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(comment_id: int, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
+    return commentRepo.delete_comment(comment_id, db, current_user)

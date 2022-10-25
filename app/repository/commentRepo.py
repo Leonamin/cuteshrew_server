@@ -98,3 +98,47 @@ def create_reply(post_id: int, group_id: int, request: schemas.CommentCreate, db
     db.commit()
     db.refresh(new_comment)
     return 'created'
+
+
+def update_comment(post_id: int, comment_id: int, request: schemas.CommentCreate, db: Session, request_user: schemas.User):
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+    if not user.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User name: {request_user.nickname}, email: {request_user.email} not found")
+
+    posting = db.query(models.Posting).filter(
+        models.Posting.id == post_id
+    )
+
+    if not posting.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Posting number: {post_id} not found")
+
+    comment = db.query(models.Comment).filter(models.Comment.id == comment_id)
+
+    if not comment.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Comment id: {comment_id} not found")
+
+    comment.update(request.dict())
+    db.commit()
+    return 'updated'
+
+
+def delete_comment(comment_id: int, db: Session, request_user: schemas.User):
+    user = db.query(models.User).filter(
+        models.User.email == request_user.email)
+    if not user.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User name: {request_user.nickname}, email: {request_user.email} not found")
+
+    comment = db.query(models.Comment).filter(models.Comment.id == comment_id)
+
+    if not comment.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Comment id: {comment_id} not found")
+
+    comment.delete(synchronize_session=False)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
