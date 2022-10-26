@@ -17,7 +17,7 @@ def get_all(name: str, db: Session = Depends(database.get_db)):
     return postingRepo.get_all(name, db)
 
 
-@router.get("/{id}", response_model=schemas.PostingBase)
+@router.get("/{id}", response_model=schemas.PostingResponse)
 def get_post(name: str, id: int, password: Optional[str] = None, db: Session = Depends(database.get_db)):
     return postingRepo.get_post(name, id, password, db)
 

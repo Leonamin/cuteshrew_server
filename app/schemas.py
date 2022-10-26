@@ -118,3 +118,24 @@ class Comment(BaseModel):
 
 class CommentCreate(BaseModel):
     comment: str
+
+
+class UserResponse(BaseModel):
+    nickname: str
+    email: str
+
+    class Config():
+        orm_mode = True
+
+
+class PostingResponse(BaseModel):
+    id: int
+    title: str
+    body: str
+    is_locked: bool
+    published_at: int
+    updated_at: int
+    creator: UserResponse
+
+    class Config():
+        orm_mode = True

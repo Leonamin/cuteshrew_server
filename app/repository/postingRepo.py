@@ -32,21 +32,20 @@ def get_post(name: str, post_id: int, password: str, db: Session):
                             detail=f"Community with the name {name} not found")
 
     posting = db.query(models.Posting).filter(
-        models.Posting.community_id == community.first().id, models.Posting.id == post_id)
+        models.Posting.community_id == community.first().id, models.Posting.id == post_id).first()
 
-    if not posting.first():
+    if not posting:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Posting with the id {post_id} not found on {name} Community")
     # https://auth0.com/blog/forbidden-unauthorized-http-status-codes/
-    if posting.first().is_locked:
+    if posting.is_locked:
         if password == None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail=f"need password")
-        if not Hash.verify(posting.first().password, password):
+        if not Hash.verify(posting.password, password):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail=f"Invalid password")
-
-    return posting.first()
+    return posting
 
 # FIXME password가 공백이여도 암호가 생성된다 nullable로 만들어야해!
 
