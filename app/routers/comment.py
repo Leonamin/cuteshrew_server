@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
@@ -12,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{page_num}")
+@router.get("/{page_num}", response_model=List[schemas.CommentResponse])
 def get_page(community_name: str, post_id: int, page_num: int, count_per_page: int, db: Session = Depends(database.get_db)):
     return commentRepo.get_page(post_id, page_num, count_per_page, db)
 

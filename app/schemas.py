@@ -139,3 +139,18 @@ class PostingResponse(BaseModel):
 
     class Config():
         orm_mode = True
+
+
+class CommentResponse(BaseModel):
+    id: int
+    user_id: int
+    comment: str
+    created_at: int
+    post_id: int
+    comment_class: int
+    order: int
+    group_id: int
+    creator: UserResponse
+
+    class Config():
+        orm_mode = True

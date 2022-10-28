@@ -35,6 +35,7 @@ class User(Base):
 
     # 작성한 포스팅
     postings = relationship("Posting", back_populates="creator")
+    comments = relationship("Comment", back_populates="creator")
 
 
 class Community(Base):
@@ -69,3 +70,5 @@ class Comment(Base):
     order = Column(Integer)
     # 댓글 그룹 id
     group_id = Column(Integer)
+
+    creator = relationship("User", back_populates="comments")
