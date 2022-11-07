@@ -34,5 +34,5 @@ def update_comment(community_name: str, post_id: int, comment_id: int, request: 
 
 
 @router.delete('/{comment_id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(comment_id: int, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
+def delete_comment(community_name: str, post_id: int, comment_id: int, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     return commentRepo.delete_comment(comment_id, db, current_user)
