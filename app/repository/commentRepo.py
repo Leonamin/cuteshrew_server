@@ -2,6 +2,7 @@ from tokenize import group
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
+from app.dependency import Authority
 
 from .. import models, schemas
 import time
@@ -134,6 +135,11 @@ def delete_comment(comment_id: int, db: Session, request_user: schemas.User):
                             detail=f"User name: {request_user.nickname}, email: {request_user.email} not found")
 
     comment = db.query(models.Comment).filter(models.Comment.id == comment_id)
+
+    if not user.first().id == comment.first().user_id:
+        if not user.first().authority.value >= Authority.SUB_ADMIN.value:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail=f"This user is not creator of this comment")
 
     if not comment.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
