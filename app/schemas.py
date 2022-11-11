@@ -119,6 +119,14 @@ class Comment(BaseModel):
 class CommentCreate(BaseModel):
     comment: str
 
+class CommunityPreview(BaseModel):
+    id: int
+    name: str
+    showname: str
+
+    class Config():
+        orm_mode = True
+
 
 class UserResponse(BaseModel):
     nickname: str
@@ -136,6 +144,7 @@ class PostingResponse(BaseModel):
     published_at: int
     updated_at: int
     creator: UserResponse
+    own_community: CommunityPreview
 
     class Config():
         orm_mode = True
