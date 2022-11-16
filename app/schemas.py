@@ -149,6 +149,17 @@ class PostingResponse(BaseModel):
     class Config():
         orm_mode = True
 
+class PostingPreviewResponse(BaseModel):
+    id: int
+    title: str
+    is_locked: bool
+    published_at: int
+    updated_at: int
+    creator: UserResponse
+    own_community: CommunityPreview
+
+    class Config():
+        orm_mode = True
 
 class CommentResponse(BaseModel):
     id: int

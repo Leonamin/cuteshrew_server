@@ -21,7 +21,6 @@ def get_all(name: str, db: Session = Depends(database.get_db)):
 def get_post(name: str, id: int, password: Optional[str] = None, db: Session = Depends(database.get_db)):
     return postingRepo.get_post(name, id, password, db)
 
-
 @router.post("", status_code=status.HTTP_201_CREATED)
 def create_post(name: str, request: schemas.PostingCreate, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(get_current_user)):
     return postingRepo.create_post(name, request, db, current_user)
