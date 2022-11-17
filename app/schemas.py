@@ -178,3 +178,11 @@ class CommentResponse(BaseModel):
 
     class Config():
         orm_mode = True
+
+class CommentResponseWithHeader(BaseModel):
+    comment_count: int
+    comments: List[CommentResponse]
+    
+    class Config():
+        orm_mode = True
+    
