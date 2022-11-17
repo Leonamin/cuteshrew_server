@@ -161,6 +161,10 @@ class PostingPreviewResponse(BaseModel):
     class Config():
         orm_mode = True
 
+class PostingPreviewResponseWithHeader(BaseModel):
+    posting_count: int
+    postings: List[PostingPreviewResponse]
+
 class CommentResponse(BaseModel):
     id: int
     user_id: int
