@@ -157,6 +157,7 @@ class PostingPreviewResponse(BaseModel):
     updated_at: int
     creator: UserResponse
     own_community: CommunityPreview
+    comment_count: int
 
     class Config():
         orm_mode = True

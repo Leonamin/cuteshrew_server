@@ -36,7 +36,7 @@ def search_posts_by_user(user_id: int, user_name: str, start_post_id: int, load_
         user_id = user.id
     
     if (start_post_id != None):
-        postings = db.query(models.Posting)\
+        postings_db = db.query(models.Posting)\
             .filter(
             models.Posting.user_id == user_id)\
             .order_by(models.Posting.id.desc())\
@@ -44,15 +44,33 @@ def search_posts_by_user(user_id: int, user_name: str, start_post_id: int, load_
             .limit(load_page_num)\
             .all()
     else :
-        postings = db.query(models.Posting)\
+        postings_db = db.query(models.Posting)\
             .filter(
             models.Posting.user_id == user_id)\
             .order_by(models.Posting.id.desc())\
             .limit(load_page_num)\
-            .all()
+            .all() 
+    # 게시글 개수 구하기
     posting_counts = db.query(models.Posting)\
             .filter(
             models.Posting.user_id == user_id).count()
+
+    # 댓글 개수 구해서 PostingPreviewResponse에 추가
+    postings= []
+    for posting in postings_db:
+        comment_count = db.query(models.Comment)\
+            .filter(models.Comment.post_id == posting.id).count()
+        posting_response = schemas.PostingPreviewResponse(\
+            id=posting.id, \
+            title=posting.title, \
+            is_locked=posting.is_locked, \
+            published_at=posting.published_at, \
+            updated_at=posting.updated_at, \
+            creator= posting.creator, \
+            own_community=posting.own_community,\
+            comment_count= comment_count,)
+        postings.append(posting_response)
+        
     
     return schemas.PostingPreviewResponseWithHeader(posting_count=posting_counts, postings=postings)
     # return postings
