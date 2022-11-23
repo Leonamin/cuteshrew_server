@@ -12,7 +12,7 @@ from .. import models, schemas
 # 포스팅은 일단 user가 있어야 반환
 # user는 user id, nickname으로 검색해서 찾는다
 
-def search_posts_by_user(user_id: int, user_name: str, start_post_id: int, load_page_num: int, db: Session):
+def search_posts_by_user(user_id: int, user_name: str, start_id: int, load_page_num: int, db: Session):
     if (user_id == None and user_name == None):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Not found this user")
@@ -35,12 +35,12 @@ def search_posts_by_user(user_id: int, user_name: str, start_post_id: int, load_
                             detail=f"Not found this user")
         user_id = user.id
     
-    if (start_post_id != None):
+    if (start_id != None):
         postings_db = db.query(models.Posting)\
             .filter(
             models.Posting.user_id == user_id)\
             .order_by(models.Posting.id.desc())\
-            .where(models.Posting.id < start_post_id)\
+            .where(models.Posting.id < start_id)\
             .limit(load_page_num)\
             .all()
     else :
@@ -82,7 +82,7 @@ def search_posts_by_user(user_id: int, user_name: str, start_post_id: int, load_
 # 포스팅은 일단 user가 있어야 반환
 # user는 user id, nickname으로 검색해서 찾는다
 
-def search_comments_by_user(user_id: int, user_name: str, start_comment_id: int, load_page_num: int, db: Session):
+def search_comments_by_user(user_id: int, user_name: str, start_id: int, load_page_num: int, db: Session):
     if (user_id == None and user_name == None):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Not found this user")
@@ -105,12 +105,12 @@ def search_comments_by_user(user_id: int, user_name: str, start_comment_id: int,
                             detail=f"Not found this user")
         user_id = user.id
     
-    if (start_comment_id != None):
+    if (start_id != None):
         comments = db.query(models.Comment)\
             .filter(
             models.Comment.user_id == user_id)\
             .order_by(models.Comment.id.desc())\
-            .where(models.Comment.id < start_comment_id)\
+            .where(models.Comment.id < start_id)\
             .limit(load_page_num)\
             .all()
     else :
