@@ -19,6 +19,7 @@ class Posting(Base):
 
     own_community = relationship("Community", back_populates="postings")
     creator = relationship("User", back_populates="postings")
+    comments = relationship("Comment", back_populates="posting")
 
 
 class User(Base):
@@ -72,3 +73,4 @@ class Comment(Base):
     group_id = Column(Integer)
 
     creator = relationship("User", back_populates="comments")
+    posting = relationship("Posting", back_populates="comments")

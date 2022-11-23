@@ -7,7 +7,7 @@ from app.dependency import Authority
 from .. import models, schemas
 import time
 
-
+# TODO schema 변경으로 인해 Optional 이지만 매번 posting이 가버리게되는데 이거 삭제해야함
 def get_page(post_id: int, page_num: int, count_per_page: int, db: Session):
     posting = db.query(models.Posting).filter(models.Posting.id == post_id)
 

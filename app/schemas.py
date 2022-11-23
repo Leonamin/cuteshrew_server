@@ -157,7 +157,7 @@ class PostingPreviewResponse(BaseModel):
     updated_at: int
     creator: UserResponse
     own_community: CommunityPreview
-    comment_count: int
+    comment_count: Union[int, None] = None
 
     class Config():
         orm_mode = True
@@ -176,6 +176,7 @@ class CommentResponse(BaseModel):
     order: int
     group_id: int
     creator: UserResponse
+    posting: Union[PostingPreviewResponse, None] = None
 
     class Config():
         orm_mode = True
@@ -186,4 +187,3 @@ class CommentResponseWithHeader(BaseModel):
     
     class Config():
         orm_mode = True
-    
