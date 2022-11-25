@@ -8,15 +8,37 @@ import time
 
 
 def get_all(community_count: int, db: Session):
-
-    # TODO 제발 이거보다 좀 최적화된 방법을 찾고 싶어요
-    # I want to find a better code than this!
-    communities = db.query(models.Community).limit(community_count).all()
-
-    for i in range(0, len(communities)):
-        communities[i].postings = db.query(models.Posting).filter(
-            models.Posting.community_id == communities[i].id).order_by(models.Posting.id.desc()).limit(5).all()
-
+    if (community_count > 0) :
+        communities_db = db.query(models.Community).limit(community_count).all()
+    else :
+        communities_db = db.query(models.Community).all()
+        
+    communities = []    
+    
+    for community in communities_db:
+        community.postings = db.query(models.Posting).filter(
+            models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
+        postings = []
+        for posting in community.postings:
+            comment_count = db.query(models.Comment)\
+                .filter(models.Comment.post_id == posting.id).count()
+            posting_preview = schemas.PostingPreview(\
+                id=posting.id,\
+                title=posting.title,\
+                is_locked=posting.is_locked,\
+                comment_count=comment_count)
+            postings.append(posting_preview)
+        show_community = schemas.ShowCommunity(\
+            id=community.id,\
+            name=community.name,\
+            showname=community.showname,\
+            authority=community.authority,\
+            created_at=community.created_at,\
+            published_at=community.published_at,\
+            postings=postings,\
+            postings_count=len(postings))
+        communities.append(show_community)
+        
     return communities
 
 

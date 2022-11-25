@@ -17,7 +17,7 @@ default_count_per_page = 15
 
 
 @router.get('', response_model=List[schemas.ShowCommunity])
-def all(community_count: Optional[int] = default_community_count, db: Session = Depends(database.get_db)):
+def all(community_count: Optional[int] = 0, db: Session = Depends(database.get_db)):
     return communityRepo.get_all(community_count, db)
 
 # TODO 어드민만 생성 가능하게 변경

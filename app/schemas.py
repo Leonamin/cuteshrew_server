@@ -29,6 +29,7 @@ class PostingPreview(BaseModel):
     id: int
     title: str
     is_locked: bool
+    comment_count: Union[int, None] = None
 
     class Config():
         orm_mode = True
