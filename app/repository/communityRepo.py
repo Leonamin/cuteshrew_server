@@ -56,8 +56,27 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
         .offset((page_num - 1) * count_per_page)\
         .limit(count_per_page)\
         .all()
+    postings = []
+    for posting in community.postings:
+        comment_count = db.query(models.Comment)\
+            .filter(models.Comment.post_id == posting.id).count()
+        posting_preview = schemas.PostingPreview(\
+            id=posting.id,\
+            title=posting.title,\
+            is_locked=posting.is_locked,\
+            comment_count=comment_count)
+        postings.append(posting_preview)
+    show_community = schemas.ShowCommunity(\
+            id=community.id,\
+            name=community.name,\
+            showname=community.showname,\
+            authority=community.authority,\
+            created_at=community.created_at,\
+            published_at=community.published_at,\
+            postings=postings,\
+            postings_count=len(postings))
 
-    return community
+    return show_community
 
 
 def create(request: schemas.CommunityBase, db: Session, request_user: schemas.User):
