@@ -102,7 +102,7 @@ class ResponsePostingList(BaseModel):
 
 class ResponseComment(CommentBase):
     creator: UserBase
-    posting: ResponsePosting
+    posting: Optional[ResponsePosting] = None
     
 class ResponseCommentList(BaseModel):
     comment_count: int

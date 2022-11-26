@@ -1,13 +1,9 @@
-from tokenize import group
-from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
 from app.dependency import Authority
 
-from .. import models, schemas
+from .. import models, new_schemas
 import time
-
-# TODO schema 변경으로 인해 Optional 이지만 매번 posting이 가버리게되는데 이거 삭제해야함
 
 
 def get_page(post_id: int, page_num: int, count_per_page: int, db: Session):
@@ -16,17 +12,32 @@ def get_page(post_id: int, page_num: int, count_per_page: int, db: Session):
     if not posting.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Posting with the id {post_id} not found")
-    comments = db.query(models.Comment)\
+    
+    comments_db = db.query(models.Comment)\
         .filter(models.Comment.post_id == post_id)\
         .order_by(models.Comment.group_id)\
         .offset((page_num - 1) * count_per_page)\
         .limit(count_per_page)\
         .all()
-
+    
+    comments = []
+    for comment in comments_db:
+        comment = new_schemas.ResponseComment(
+            id=comment.id,
+            user_id=comment.user_id,
+            comment=comment.comment,
+            created_at=comment.created_at,
+            post_id=comment.post_id,
+            comment_class=comment.comment_class,
+            order=comment.order,
+            group_id=comment.group_id,
+            creator=new_schemas.UserBase(nickname=comment.creator.nickname,email=comment.creator.email)
+        )
+        comments.append(comment)
     return comments
 
 
-def create_comment(post_id: int, request: schemas.CommentCreate, db: Session, request_user: schemas.User):
+def create_comment(post_id: int, request: new_schemas.CommentCreate, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
     if not user.first():
@@ -66,7 +77,7 @@ def create_comment(post_id: int, request: schemas.CommentCreate, db: Session, re
     return 'created'
 
 
-def create_reply(post_id: int, group_id: int, request: schemas.CommentCreate, db: Session, request_user: schemas.User):
+def create_reply(post_id: int, group_id: int, request: new_schemas.CommentCreate, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
     if not user.first():
@@ -103,7 +114,7 @@ def create_reply(post_id: int, group_id: int, request: schemas.CommentCreate, db
     return 'created'
 
 
-def update_comment(post_id: int, comment_id: int, request: schemas.CommentCreate, db: Session, request_user: schemas.User):
+def update_comment(post_id: int, comment_id: int, request: new_schemas.CommentCreate, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
     if not user.first():
@@ -129,7 +140,7 @@ def update_comment(post_id: int, comment_id: int, request: schemas.CommentCreate
     return 'updated'
 
 
-def delete_comment(comment_id: int, db: Session, request_user: schemas.User):
+def delete_comment(comment_id: int, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
     if not user.first():
