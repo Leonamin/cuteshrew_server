@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
 
 from app.dependency import Authority
-from .. import models, schemas
+from .. import models, new_schemas
 import time
+
+# 일반적으로 메인 페이지에 쓰이고 0개면 모든 커뮤니티를 불러온다
 
 
 def get_all(community_count: int, db: Session):
@@ -16,20 +18,25 @@ def get_all(community_count: int, db: Session):
 
     communities = []
 
+    # 커뮤니티 게시글 최신순으로 개수 한정해서 넣어주기
     for community in communities_db:
         community.postings = db.query(models.Posting).filter(
             models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
         postings = []
+        # 게시글 응답 스키마 생성 후 리스트에 추가
         for posting in community.postings:
             comment_count = db.query(models.Comment)\
                 .filter(models.Comment.post_id == posting.id).count()
-            posting_preview = schemas.PostingPreview(
+            posting_preview = new_schemas.PostingBase(
                 id=posting.id,
                 title=posting.title,
                 is_locked=posting.is_locked,
-                comment_count=comment_count)
+                published_at=posting.published_at,
+                updated_at=posting.updated_at,
+                comment_count=comment_count
+            )
             postings.append(posting_preview)
-        show_community = schemas.ShowCommunity(
+        show_community = new_schemas.ResponseShowCommunity(
             id=community.id,
             name=community.name,
             showname=community.showname,
@@ -37,10 +44,13 @@ def get_all(community_count: int, db: Session):
             created_at=community.created_at,
             published_at=community.published_at,
             postings=postings,
-            postings_count=len(postings))
+            posting_count=len(postings),
+        )
         communities.append(show_community)
 
     return communities
+
+# 개별 커뮤니티 화면에서 요청하게 될 함수
 
 
 def get_page(name: str, page_num: int, count_per_page: int, db: Session):
@@ -61,13 +71,15 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
     for posting in community.postings:
         comment_count = db.query(models.Comment)\
             .filter(models.Comment.post_id == posting.id).count()
-        posting_preview = schemas.PostingPreview(
+        posting_preview = new_schemas.PostingBase(
             id=posting.id,
             title=posting.title,
             is_locked=posting.is_locked,
+            published_at=posting.published_at,
+            updated_at=posting.updated_at,
             comment_count=comment_count)
         postings.append(posting_preview)
-    show_community = schemas.ShowCommunity(
+    show_community = new_schemas.ResponseShowCommunity(
         id=community.id,
         name=community.name,
         showname=community.showname,
@@ -80,7 +92,7 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
     return show_community
 
 
-def create(request: schemas.CommunityBase, db: Session, request_user: schemas.User):
+def create(request: new_schemas.CommunityCreate, db: Session, request_user: new_schemas.UserBase):
     # 유저 검사
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
@@ -94,13 +106,14 @@ def create(request: schemas.CommunityBase, db: Session, request_user: schemas.Us
                                      authority=request.authority,
                                      created_at=int(time.time()),
                                      published_at=int(time.time()))
+
     db.add(new_community)
     db.commit()
     db.refresh(new_community)
     return new_community
 
 
-def destroy(id: int, db: Session, request_user: schemas.User):
+def destroy(id: int, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
 
@@ -118,17 +131,3 @@ def destroy(id: int, db: Session, request_user: schemas.User):
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-def show(name: str, db: Session):
-
-    community = db.query(models.Community).filter(
-        models.Community.name == name).first()
-    if not community:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
-                            'detail': f"Community with the name {name} is not available"})
-
-    community.postings = db.query(models.Posting).filter(
-        models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
-
-    return community
