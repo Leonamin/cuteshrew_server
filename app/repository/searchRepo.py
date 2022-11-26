@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, Response, status
-from app.dependency import Authority
+from fastapi import HTTPException, status
 
-from .. import models, schemas
+
+from .. import models, new_schemas
 
 
 # user_id와 user_name 둘중 하나는 있어야함
@@ -60,18 +60,20 @@ def search_posts_by_user(user_id: int, user_name: str, start_id: int, load_page_
     for posting in postings_db:
         comment_count = db.query(models.Comment)\
             .filter(models.Comment.post_id == posting.id).count()
-        posting_response = schemas.PostingPreviewResponse(
+        posting_response = new_schemas.ResponsePosting(
             id=posting.id,
             title=posting.title,
             is_locked=posting.is_locked,
             published_at=posting.published_at,
             updated_at=posting.updated_at,
-            creator=posting.creator,
+            creator=new_schemas.UserBase(
+                nickname=posting.creator.nickname,
+                email=posting.creator.email),
             own_community=posting.own_community,
             comment_count=comment_count,)
         postings.append(posting_response)
 
-    return schemas.PostingPreviewResponseWithHeader(posting_count=posting_counts, postings=postings)
+    return new_schemas.ResponsePostingList(posting_count=posting_counts, postings=postings)
     # return postings
 
 # user_id와 user_name 둘중 하나는 있어야함
@@ -124,4 +126,4 @@ def search_comments_by_user(user_id: int, user_name: str, start_id: int, load_pa
         .filter(
         models.Comment.user_id == user_id).count()
 
-    return schemas.CommentResponseWithHeader(comment_count=comment_counts, comments=comments)
+    return new_schemas.ResponseCommentList(comment_count=comment_counts, comments=comments)

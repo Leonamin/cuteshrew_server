@@ -6,16 +6,22 @@ from app.dependency import Authority
 # 신 스키마
 
 
-class PostingBase(BaseModel):
+class PostingPreview(BaseModel):
     id: int
     title: str
-    body: Optional[str] = None
     published_at: int
     updated_at: int
     user_id: Optional[int] = None
     is_locked: bool
-    password: Optional[str] = None
     comment_count: Optional[int] = None
+
+    class Config():
+        orm_mode = True
+
+
+class PostingBase(PostingPreview):
+    body: Optional[str] = None
+    password: Optional[str] = None
 
     class Config():
         orm_mode = True
@@ -32,18 +38,21 @@ class CommunityBase(BaseModel):
 
     class Config():
         orm_mode = True
-    
 
 
-class UserBase(BaseModel):
-    id: Optional[int] = None
+class UserPreview(BaseModel):
     nickname: str
     email: str
-    created_at: Optional[int] = None
-    authority: Optional[Authority] = None
 
     class Config():
         orm_mode = True
+
+
+class UserBase(UserPreview):
+    id: Optional[int] = None
+
+    created_at: Optional[int] = None
+    authority: Optional[Authority] = None
 
 
 class CommentBase(BaseModel):
@@ -92,18 +101,27 @@ class ResponseShowCommunity(CommunityBase):
     class Config():
         orm_mode = True
 
+
 class ResponsePosting(PostingBase):
-    creator: UserBase
+    creator: UserPreview
     own_community: CommunityBase
+
+
+class ResponsePostingPreview(PostingPreview):
+    creator: UserPreview
+    own_community: CommunityBase
+
 
 class ResponsePostingList(BaseModel):
     posting_count: int
     postings: List[ResponsePosting]
 
+
 class ResponseComment(CommentBase):
-    creator: UserBase
-    posting: Optional[ResponsePosting] = None
-    
+    creator: UserPreview
+    posting: Optional[ResponsePostingPreview] = None
+
+
 class ResponseCommentList(BaseModel):
     comment_count: int
     comments: List[ResponseComment]
