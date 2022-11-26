@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, Response, status
+from fastapi import HTTPException, status
 from app.dependency import Authority
 
 from app.hashing import Hash
-from .. import models, schemas
+from .. import models, new_schemas
 import time
 
 
-def create_user(request: schemas.UserCreate, db: Session):
+def create_user(request: new_schemas.UserCreate, db: Session):
     new_user = models.User(
         nickname=request.nickname,
         email=request.email,
@@ -21,13 +21,14 @@ def create_user(request: schemas.UserCreate, db: Session):
     return new_user
 
 
-def create_user_for_admin(request: schemas.User, db: Session, request_user: schemas.User):
+def create_user_for_admin(request: new_schemas.UserBase, db: Session, request_user: new_schemas.UserBase):
     user = db.query(models.User).filter(
         models.User.email == request_user.email)
 
     if not user.first().authority == (Authority.GOD or Authority.ADMIN or Authority.SUB_ADMIN):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f"User has low authoriy {user.first().authority}")
+        if user.first().authority < request.authority: 
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail=f"User has low authoriy {user.first().authority}")
 
     new_user = models.User(
         nickname=request.nickname,
@@ -42,7 +43,7 @@ def create_user_for_admin(request: schemas.User, db: Session, request_user: sche
     return new_user
 
 
-def get_user(nickname: str, db: Session, request_user: schemas.User):
+def get_user(nickname: str, db: Session, request_user: new_schemas.UserBase):
     request_user_info = db.query(models.User).filter(
         models.User.email == request_user.email)
 

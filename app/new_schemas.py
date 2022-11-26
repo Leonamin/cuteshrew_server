@@ -74,7 +74,7 @@ class CommunityCreate(BaseModel):
 
 
 class UserCreate(BaseModel):
-    name: str
+    nickname: str
     email: str
     password: str
     authority: Optional[Authority] = None
