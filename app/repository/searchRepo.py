@@ -60,17 +60,12 @@ def search_posts_by_user(user_id: int, user_name: str, start_id: int, load_page_
     for posting in postings_db:
         comment_count = db.query(models.Comment)\
             .filter(models.Comment.post_id == posting.id).count()
-        posting_response = new_schemas.ResponsePosting(
-            id=posting.id,
-            title=posting.title,
-            is_locked=posting.is_locked,
-            published_at=posting.published_at,
-            updated_at=posting.updated_at,
-            creator=new_schemas.UserBase(
-                nickname=posting.creator.nickname,
-                email=posting.creator.email),
-            own_community=posting.own_community,
-            comment_count=comment_count,)
+        posting_response = new_schemas.ResponsePostingPreview.from_orm(posting)
+        posting_response.comment_count = comment_count
+        posting_response.user_id = None
+        posting_response.own_community.authority = None
+        posting_response.own_community.created_at = None
+        posting_response.own_community.published_at = None
         postings.append(posting_response)
 
     return new_schemas.ResponsePostingList(posting_count=posting_counts, postings=postings)
@@ -108,7 +103,7 @@ def search_comments_by_user(user_id: int, user_name: str, start_id: int, load_pa
         user_id = user.id
 
     if (start_id != None):
-        comments = db.query(models.Comment)\
+        comments_db = db.query(models.Comment)\
             .filter(
             models.Comment.user_id == user_id)\
             .order_by(models.Comment.id.desc())\
@@ -116,7 +111,7 @@ def search_comments_by_user(user_id: int, user_name: str, start_id: int, load_pa
             .limit(load_page_num)\
             .all()
     else:
-        comments = db.query(models.Comment)\
+        comments_db = db.query(models.Comment)\
             .filter(
             models.Comment.user_id == user_id)\
             .order_by(models.Comment.id.desc())\
@@ -125,5 +120,15 @@ def search_comments_by_user(user_id: int, user_name: str, start_id: int, load_pa
     comment_counts = db.query(models.Comment)\
         .filter(
         models.Comment.user_id == user_id).count()
+        
+    comments = []
+    
+    for comment in comments_db:
+        comment_response = new_schemas.ResponseComment.from_orm(comment)
+        comment_response.posting.own_community.authority = None
+        comment_response.posting.own_community.created_at = None
+        comment_response.posting.own_community.published_at = None
+        comment_response.posting.user_id = None
+        comments.append(comment_response)
 
     return new_schemas.ResponseCommentList(comment_count=comment_counts, comments=comments)

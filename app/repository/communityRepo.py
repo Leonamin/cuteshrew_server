@@ -27,25 +27,12 @@ def get_all(community_count: int, db: Session):
         for posting in community.postings:
             comment_count = db.query(models.Comment)\
                 .filter(models.Comment.post_id == posting.id).count()
-            posting_preview = new_schemas.PostingBase(
-                id=posting.id,
-                title=posting.title,
-                is_locked=posting.is_locked,
-                published_at=posting.published_at,
-                updated_at=posting.updated_at,
-                comment_count=comment_count
-            )
+            posting_preview = new_schemas.PostingPreview.from_orm(posting)
+            posting_preview.comment_count = comment_count
             postings.append(posting_preview)
-        show_community = new_schemas.ResponseShowCommunity(
-            id=community.id,
-            name=community.name,
-            showname=community.showname,
-            authority=community.authority,
-            created_at=community.created_at,
-            published_at=community.published_at,
-            postings=postings,
-            posting_count=len(postings),
-        )
+        show_community = new_schemas.ResponseShowCommunity.from_orm(community)
+        show_community.postings = postings
+        show_community.posting_count = len(postings)
         communities.append(show_community)
 
     return communities
@@ -71,23 +58,12 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
     for posting in community.postings:
         comment_count = db.query(models.Comment)\
             .filter(models.Comment.post_id == posting.id).count()
-        posting_preview = new_schemas.PostingBase(
-            id=posting.id,
-            title=posting.title,
-            is_locked=posting.is_locked,
-            published_at=posting.published_at,
-            updated_at=posting.updated_at,
-            comment_count=comment_count)
+        posting_preview = new_schemas.PostingPreview.from_orm(posting)
+        posting_preview.comment_count = comment_count
         postings.append(posting_preview)
-    show_community = new_schemas.ResponseShowCommunity(
-        id=community.id,
-        name=community.name,
-        showname=community.showname,
-        authority=community.authority,
-        created_at=community.created_at,
-        published_at=community.published_at,
-        postings=postings,
-        postings_count=len(postings))
+    show_community = new_schemas.ResponseShowCommunity.from_orm(community)
+    show_community.postings = postings
+    show_community.posting_count = len(postings)
 
     return show_community
 

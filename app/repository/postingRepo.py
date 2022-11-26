@@ -14,37 +14,30 @@ def get_post(name: str, post_id: int, password: str, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Community with the name {name} not found")
 
-    posting = db.query(models.Posting).filter(
+    posting_db = db.query(models.Posting).filter(
         models.Posting.community_id == community.first().id, models.Posting.id == post_id).first()
 
-    if not posting:
+    if not posting_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Posting with the id {post_id} not found on {name} Community")
     # https://auth0.com/blog/forbidden-unauthorized-http-status-codes/
-    if posting.is_locked:
+    if posting_db.is_locked:
         if password == None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail=f"need password")
-        if not Hash.verify(posting.password, password):
+        if not Hash.verify(posting_db.password, password):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail=f"Invalid password")
-            
-    return new_schemas.ResponsePosting(
-        id=posting.id,
-        title=posting.title,
-        body=posting.body,
-        is_locked=posting.is_locked,
-        published_at=posting.published_at,
-        updated_at=posting.updated_at,
-        creator=new_schemas.UserBase(
-            nickname=posting.creator.nickname, 
-            email=posting.creator.email),
-        own_community=new_schemas.CommunityBase(
-            id=posting.own_community.id,
-            name=posting.own_community.name,
-            showname=posting.own_community.showname,
-            ),
-        )
+    
+    posting = new_schemas.ResponsePosting.from_orm(posting_db)
+    posting.password = None
+    posting.user_id = None
+    # posting.own_community.id = None
+    posting.own_community.authority = None
+    posting.own_community.created_at = None
+    posting.own_community.published_at = None
+    
+    return posting
 
 # FIXME password가 공백이여도 암호가 생성된다 nullable로 만들어야해!
 

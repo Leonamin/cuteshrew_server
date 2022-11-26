@@ -22,18 +22,9 @@ def get_page(post_id: int, page_num: int, count_per_page: int, db: Session):
     
     comments = []
     for comment in comments_db:
-        comment = new_schemas.ResponseComment(
-            id=comment.id,
-            user_id=comment.user_id,
-            comment=comment.comment,
-            created_at=comment.created_at,
-            post_id=comment.post_id,
-            comment_class=comment.comment_class,
-            order=comment.order,
-            group_id=comment.group_id,
-            creator=new_schemas.UserBase(nickname=comment.creator.nickname,email=comment.creator.email)
-        )
-        comments.append(comment)
+        comment_response = new_schemas.ResponseComment.from_orm(comment)
+        comment_response.posting = None
+        comments.append(comment_response)
     return comments
 
 
