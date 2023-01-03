@@ -4,8 +4,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 import time
 
-from ..schemas import schemas
-
 from ..models import models
 from .. import database, token
 from ..hashing import Hash
