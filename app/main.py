@@ -11,7 +11,7 @@ from starlette.responses import FileResponse
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME, version=0.1)
+    _app = FastAPI(title=settings.PROJECT_NAME, version=0.2)
 
     models.Base.metadata.create_all(bind=engine)
 
