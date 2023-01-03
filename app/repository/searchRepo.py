@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
+from ..models import models
 
-from .. import models, new_schemas
+
+from ..schemas import new_schemas
 
 
 # user_id와 user_name 둘중 하나는 있어야함

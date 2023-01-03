@@ -1,9 +1,10 @@
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
+from ..models import models
 
 from app.dependency import Authority
-from .. import models, new_schemas
+from ..schemas import new_schemas
 import time
 
 # 일반적으로 메인 페이지에 쓰이고 0개면 모든 커뮤니티를 불러온다

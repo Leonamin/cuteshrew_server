@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Response, status
+from ..models import models
 from app.dependency import Authority
 
-from .. import models, new_schemas
+from ..schemas import new_schemas
 import time
 
 

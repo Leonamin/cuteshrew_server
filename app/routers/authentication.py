@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 import time
-from .. import schemas, database, models, token
+
+from ..schemas import schemas
+
+from ..models import models
+from .. import database, token
 from ..hashing import Hash
 
 router = APIRouter(

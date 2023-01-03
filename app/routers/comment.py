@@ -3,9 +3,11 @@ from fastapi import APIRouter
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from .. import new_schemas, database
+from ..schemas import new_schemas
+
+from .. import database
 from ..repository import commentRepo
-from ..oauth2 import get_current_user
+from .oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/community/{community_name}/{post_id}/comment",

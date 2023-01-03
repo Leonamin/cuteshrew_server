@@ -2,9 +2,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from .. import database, new_schemas
+from ..schemas import new_schemas
+
+from .. import database
 from ..repository import communityRepo
-from ..oauth2 import get_current_user
+from .oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/community",

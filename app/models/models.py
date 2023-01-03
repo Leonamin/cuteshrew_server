@@ -2,7 +2,7 @@ from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Enum, se
 from sqlalchemy.orm import relationship, column_property
 
 from app.dependency import Authority
-from .database import Base
+from ..database import Base
 
 
 class Posting(Base):

@@ -2,7 +2,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from .. import new_schemas, database
+from ..schemas import new_schemas
+
+from .. import database
 from ..repository import searchRepo
 
 router = APIRouter(
