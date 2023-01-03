@@ -24,6 +24,9 @@ def get_all(community_count: int, db: Session):
         community.postings = db.query(models.Posting).filter(
             models.Posting.community_id == community.id).order_by(models.Posting.id.desc()).limit(5).all()
         postings = []
+        posting_count = db.query(models.Posting).filter(
+            models.Posting.own_community == community
+            ).count()
         # 게시글 응답 스키마 생성 후 리스트에 추가
         for posting in community.postings:
             comment_count = db.query(models.Comment)\
@@ -33,7 +36,7 @@ def get_all(community_count: int, db: Session):
             postings.append(posting_preview)
         show_community = new_schemas.ResponseShowCommunity.from_orm(community)
         show_community.postings = postings
-        show_community.posting_count = len(postings)
+        show_community.posting_count = posting_count
         communities.append(show_community)
 
     return communities
@@ -56,6 +59,11 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
         .limit(count_per_page)\
         .all()
     postings = []
+    
+    posting_count = db.query(models.Posting).filter(
+        models.Posting.own_community == community
+    ).count()
+    
     for posting in community.postings:
         comment_count = db.query(models.Comment)\
             .filter(models.Comment.post_id == posting.id).count()
@@ -64,7 +72,7 @@ def get_page(name: str, page_num: int, count_per_page: int, db: Session):
         postings.append(posting_preview)
     show_community = new_schemas.ResponseShowCommunity.from_orm(community)
     show_community.postings = postings
-    show_community.posting_count = len(postings)
+    show_community.posting_count = posting_count
 
     return show_community
 
