@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.schemas.response.response_user_detail import ResponseUserDetail
+
 from ..schemas import new_schemas
 
 from .. import database
@@ -23,6 +25,6 @@ def create_user_for_admin(request: new_schemas.UserCreate, db: Session = Depends
     return userRepo.create_user_for_admin(request, db, current_user)
 
 
-@router.get('/{name}', response_model=new_schemas.UserBase)
-def get_user(nickname: str, db: Session = Depends(database.get_db), current_user: new_schemas.UserBase = Depends(get_current_user)):
-    return userRepo.get_user(nickname, db, current_user)
+@router.get('/search', response_model=ResponseUserDetail)
+def get_user(user_name: str, db: Session = Depends(database.get_db)):
+    return userRepo.get_user(user_name, db)
