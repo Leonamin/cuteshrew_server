@@ -66,7 +66,7 @@ def search_posts_by_user(user_id: int, user_name: str, start_id: int, load_page_
         posting_response.comment_count = comment_count
         posting_response.user_id = None
         
-        if (posting_response.posting.own_community is not None):
+        if (posting_response.own_community is not None):
                 posting_response.own_community.authority = None
                 posting_response.own_community.created_at = None
                 posting_response.own_community.published_at = None
