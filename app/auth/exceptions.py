@@ -1,19 +1,15 @@
+from typing import Any, Dict, Optional
 from fastapi import HTTPException, status
 
 
-# def InvalidCredentials():
-#     return HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                          detail=f"Invaild Credentials")
+def InvalidCredentials():
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},)
 
 
-class InvalidCredentials(HTTPException):
-    def __init(self):
-        self.status_code = status.HTTP_401_UNAUTHORIZED
-        self.detail = "Could not validate credentials",
-        self.headers = {"WWW-Authenticate": "Bearer"},
-
-
-class IncorrectPassword(HTTPException):
-    def __init(self):
-        self.status_code = status.HTTP_404_NOT_FOUND
-        self.detail = "Incorrect Password",
+def IncorrectPassword():
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Incorrect password")

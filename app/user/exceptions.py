@@ -1,3 +1,7 @@
-class UserNotFoundException(Exception):
-    "user not found"
-    pass
+from fastapi import HTTPException, status
+
+
+class UserNotFoundException(HTTPException):
+    def __init__(self) -> None:
+        self.status_code = status.HTTP_404_NOT_FOUND
+        detail = "User Not Found Exception"
