@@ -13,7 +13,12 @@ from starlette.responses import FileResponse
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
+    app_configs = {"title" : settings.PROJECT_NAME, "version" : settings.VERSION}
+    
+    if settings.ENVIRONMENT not in settings.SHOW_DOCS_ENVIRONMENT:
+        app_configs["openapi_url"] = None  
+
+    _app = FastAPI(**app_configs)
 
     models.Base.metadata.create_all(bind=engine)
 
