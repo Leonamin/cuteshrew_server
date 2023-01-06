@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends
+from typing import Mapping
+from fastapi import APIRouter, Depends, status
+
+from .dependency import valid_user_name, valid_user_email
+from .schemas import RequestUserCreate
+from .exceptions import UserNotFoundException
 
 
 router = APIRouter(
@@ -7,9 +12,10 @@ router = APIRouter(
 )
 
 
-@router.post('/general')
-def create_user():
-    pass
+@router.post('/general', status_code=status.HTTP_201_CREATED)
+def create_user(user: RequestUserCreate = Depends()):
+    print(user.password.get_secret_value())
+    return {"asdasd"}
 
 
 @router.post('/admin')
@@ -18,5 +24,5 @@ def create_user_for_admin():
 
 
 @router.get('/search')
-def get_user():
-    pass
+async def get_user_by_name(user: Mapping = Depends(valid_user_name)):
+    return user
