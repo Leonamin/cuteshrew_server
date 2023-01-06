@@ -9,7 +9,7 @@ from app.search.router import router as SearchRouter
 
 
 router = APIRouter(
-    prefix="/api2.0",
+    prefix="/apiv2",
 )
 
 router.include_router(AuthRouter)
