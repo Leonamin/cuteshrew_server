@@ -13,6 +13,13 @@ router = APIRouter(
     tags=['Authentication']
 )
 
+@router.post('signin', response_model=AuthToken)
+def signin(
+    request: OAuth2PasswordRequestForm = Depends(),
+    user: Mapping = Depends(),
+):
+    pass
+
 # 근데 뭔가 이상하지 않나?
 # token 유효성 검사 후 다시 token을 반환하는게 말이 안맞는 느낌이다.
 @router.post('/verify')
