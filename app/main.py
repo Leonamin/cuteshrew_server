@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core import config
 
 from app.core.config import settings
+from app.dependency import get_settings
 from .models import models
 from .database import engine
 from .routers import api
@@ -11,7 +13,7 @@ from starlette.responses import FileResponse
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME, version=0.2)
+    _app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
 
     models.Base.metadata.create_all(bind=engine)
 
@@ -29,6 +31,8 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    
+    # _app.dependency_overrides[function_name] = override_function_name
 
     # _app.include_router(community.router)
     # _app.include_router(posting.router)
@@ -42,9 +46,14 @@ def get_application():
 
 app = get_application()
 
+@app.get("/info")
+def info(settings: config.Settings = Depends(get_settings)):
+    return settings
 
+# 얘보다 뒤에 있으면 모든 /로 시작하는 응답이 안먹힌다.
 @app.get("/")
 async def index():
     return FileResponse('web/index.html', media_type='text/html')
 
 app.mount("/", StaticFiles(directory="web"), name="web")
+
