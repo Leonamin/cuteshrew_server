@@ -1,5 +1,8 @@
 from enum import Enum, auto
 from functools import lru_cache
+from typing import Mapping
+
+from fastapi import Depends
 from app.core import config
 
 class Authority(Enum):
@@ -21,5 +24,9 @@ class Authority(Enum):
 # 다만 파라미터가 있는 경우 파라미터가 달라지면 새로운 리턴 값을 줘야하므로 이때는 get_settings()를 실행하고 리턴값을 다시 저장한다.
 @lru_cache()
 def get_settings():
-    print("ASDSA")
     return config.Settings(_env_file='.env', _env_file_encoding='utf-8')
+    # return config.settings
+    
+#@lru_cache()를 중복하면 동작이 안되는 것 같다.
+def get_secret_key(settings: config.Settings = Depends(get_settings)) -> Mapping:
+    return settings.SECRET_KEY

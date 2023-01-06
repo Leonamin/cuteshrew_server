@@ -51,9 +51,9 @@ def get_application():
 
 app = get_application()
 
-@app.get("/info")
-def info(settings: config.Settings = Depends(get_settings)):
-    return settings
+# @app.get("/info")
+# def info(settings: config.Settings = Depends(get_settings)):
+#     return settings
 
 # 얘보다 뒤에 있으면 모든 /로 시작하는 응답이 안먹힌다.
 @app.get("/")
