@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.dependency import get_settings
 from .models import models
 from .database import engine
-from .routers import api
+from .routers import api, api_v2
 
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -45,6 +45,7 @@ def get_application():
     # _app.include_router(authentication.router)
     # _app.include_router(comment.router)
     _app.include_router(api.router)
+    _app.include_router(api_v2.router)
 
     return _app
 
