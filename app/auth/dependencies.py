@@ -4,11 +4,13 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from app.auth.constants import ALGORITHM
+from app.auth.constants import ALGORITHM, TOKEN_URL
 from app.auth.exceptions import InvalidCredentials
 from app.auth.schemas import AuthToken
 from app.auth.utils import getCurrentUnixTimeStamp
 from app.dependency import get_secret_key
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
 
 # data = {"sub" : user.email}
 def create_access_token(data: dict, 
@@ -33,9 +35,10 @@ def valid_token(token: AuthToken) -> AuthToken:
         raise InvalidCredentials()
     return token
 
+# get_current_user
 def parse_jwt_data(
-    token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/token")),
-    secret_key: str = Depends(get_secret_key)
+    token: str = Depends(oauth2_scheme),
+    secret_key: str = Depends(get_secret_key),
 ) -> dict:
     try:
         payload = jwt.decode(token, secret_key, algorithms=[ALGORITHM])
