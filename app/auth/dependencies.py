@@ -10,12 +10,14 @@ from app.auth.schemas import AuthToken
 from app.auth.utils import getCurrentUnixTimeStamp
 from app.dependency import get_secret_key
 
+# 얘가 로그인 하는 엔드포인트랑 똑같아야한다.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=TOKEN_URL)
 
 # data = {"sub" : user.email}
-def create_access_token(data: dict, 
+def create_access_token(
+    data: dict, 
     expires_delta: Optional[timedelta],
-    secret_ket: str = Depends(get_secret_key)
+    secret_key: str
 ):
     to_encode = data.copy()
     if expires_delta:
@@ -23,7 +25,7 @@ def create_access_token(data: dict,
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, secret_ket, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=ALGORITHM)
     return encoded_jwt, expire
 
 def valid_token(token: AuthToken) -> AuthToken:
@@ -44,6 +46,5 @@ def parse_jwt_data(
         payload = jwt.decode(token, secret_key, algorithms=[ALGORITHM])
     except JWTError:
         raise InvalidCredentials()
-        # raise "InvalidCredentials"
 
     return {"user_email": payload["sub"]}
