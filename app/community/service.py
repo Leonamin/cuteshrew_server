@@ -10,6 +10,18 @@ from app.models.models import Community
 from app.exceptions import DatabaseError
 from app.community.exceptions import CommunityNotFound
 
+async def get_communities(load_count: int):
+    try:
+        db: Session = next(database.get_db())
+        communities = db.query(Community)\
+            .limit(load_count).all()
+        if not len(communities):
+            raise CommunityNotFound()
+    except exc.SQLAlchemyError as e:
+        raise DatabaseError(detail='sqlalchemy error')
+    return communities
+        
+
 async def get_community_by_name(
     community_name: str,
 ):
@@ -17,7 +29,7 @@ async def get_community_by_name(
         db: Session = next(database.get_db())
         community = db.query(Community).filter(Community.name == community_name).first()
     except exc.SQLAlchemyError as e:
-        raise(DatabaseError(detail='sqlalchemy error'))
+        raise DatabaseError(detail='sqlalchemy error') 
     return community
 
 async def create_community(
@@ -39,7 +51,7 @@ async def create_community(
         db.commit()
         db.refresh(new_community)
     except exc.SQLAlchemyError as e:
-        raise(DatabaseError(detail='sqlalchemy error'))
+        raise DatabaseError(detail='sqlalchemy error')
     
     return new_community
 
@@ -55,4 +67,4 @@ async def delete_community(
         community.delete(synchronize_session=False)
         db.commit()
     except exc.SQLAlchemyError as e:
-        raise(DatabaseError(detail='sqlalchemy error'))
+        raise DatabaseError(detail='sqlalchemy error') 
