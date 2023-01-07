@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Mapping, Optional
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -37,6 +37,10 @@ def valid_token(token: AuthToken) -> AuthToken:
         raise InvalidCredentials()
     return token
 
+# 동작 방식
+# parse_jwt_data -> oauth2_scheme 
+# -> oauth2_scheme에 정의된 엔드포인트로 token 요청 
+# -> 정의된 엔드포인트가 토큰 주는 엔드포인트 일 경우 그 엔드포인트 동작대로 수행 후 토큰 반환
 # get_current_user
 def parse_jwt_data(
     token: str = Depends(oauth2_scheme),
@@ -47,4 +51,6 @@ def parse_jwt_data(
     except JWTError:
         raise InvalidCredentials()
 
-    return {"user_email": payload["sub"]}
+    return {"user_nickname": payload["user_nickname"]}
+
+# get_current_user

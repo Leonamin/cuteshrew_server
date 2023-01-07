@@ -9,7 +9,7 @@ from app.auth.dependencies import create_access_token, parse_jwt_data, valid_tok
 from app.auth.schemas import AuthToken
 from app.auth.utils import Hash
 from app.dependency import get_secret_key
-from app.user import dependency as user_dependency
+from app.user import service as user_service
 from .exceptions import IncorrectPassword
 
 router = APIRouter(
@@ -23,13 +23,13 @@ async def signin(
     request: OAuth2PasswordRequestForm = Depends(),
     secret_key: str = Depends(get_secret_key)
 ):
-    user = await user_dependency.get_user_by_user_name(request.username)
+    user = await user_service.get_user_by_user_name(request.username)
     if not Hash.verify(user.password, request.password):
         raise IncorrectPassword
         
     expires_delta = timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     access_token, expire_time = create_access_token(
-        data={"sub": user.email}, 
+        data={"user_nickname": user.nickname}, 
         expires_delta=expires_delta, 
         secret_key=secret_key)
     expire_time = round(int(time.time()))
@@ -40,5 +40,5 @@ async def signin(
 # 근데 뭔가 이상하지 않나?
 # token 유효성 검사 후 다시 token을 반환하는게 말이 안맞는 느낌이다.
 @router.post('/verify')
-def verify_token(token: AuthToken = Depends(valid_token)):
+async def verify_token(token: AuthToken = Depends(valid_token)):
     return parse_jwt_data(token.access_token)
