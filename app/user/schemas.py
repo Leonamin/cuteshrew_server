@@ -17,6 +17,20 @@ class RequestUserCreate(BaseModel):
         }
 
 
+class ResponseUserPreview(BaseModel):
+    nickname: str
+    email: str
+
+    class Config():
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "nickname": "best_shrew",
+                "email": "best_shrew@cuteshrew.xyz",
+            }
+        }
+
+
 class ResponseUserDetail(BaseModel):
     nickname: str
     email: str
