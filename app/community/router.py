@@ -1,6 +1,13 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, status
+from typing import List, Mapping, Optional
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+
+from app.community.exceptions import UnauthorizedException
+
+from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo
+from .dependency import valid_community_name
+from .service import create_community
+from app.user import dependency as user_dependency
 
 router = APIRouter(
     prefix="/community",
@@ -9,18 +16,25 @@ router = APIRouter(
 default_community_count = 5
 default_count_per_page = 15
 
-# 커뮤니티
-# 일반적으로 메인 페이지에 쓰이고 0개면 모든 커뮤니티를 불러온다
-
-@router.get('', response_model_exclude_none=True)
-def all(community_count: Optional[int] = 0):
-    pass
-# TODO 어드민만 생성 가능하게 변경
-
+@router.get('', response_model=ResponseCommunityInfo)
+def get_community_by_name(community: Mapping = Depends(valid_community_name)):
+    return community
+    
 
 @router.post('', status_code=status.HTTP_201_CREATED)
-def create():
-    pass
+async def create(
+    new_community: ReqeustCommunityCreate, 
+    can_create: bool = Depends(user_dependency.valid_current_user_admin),
+):
+    if can_create:
+        await create_community(
+            community_name=new_community.name,
+            community_showname=new_community.showname,
+            authority=new_community.authority,
+            )
+        return {"created"}
+    else:
+        return UnauthorizedException()
 # 204 에러는 Content-Length를 가질 수 없다
 
 
