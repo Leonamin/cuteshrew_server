@@ -1,5 +1,6 @@
 from typing import Mapping
 from fastapi import Depends
+from app.dependency import Authority
 
 from app.user.exceptions import UserNotFoundException
 
@@ -31,3 +32,11 @@ async def get_current_user_info(
     user: Mapping = await valid_user_name(parsed_info['user_nickname'])
 
     return user
+
+
+def valid_current_user_admin(
+    user: Mapping = Depends(get_current_user_info)
+) -> bool:
+    if (user.authority.value >= Authority.SUB_ADMIN.value):
+        return True
+    return False
