@@ -1,15 +1,21 @@
+from typing import Mapping
 from fastapi import APIRouter, Depends, status
 
+from app.community import dependency as community_dependency
+from app.posting.dependency import valid_posting_id
+from app.posting.schemas import ResponsePostingDetail
 
 router = APIRouter(
-    prefix="/community/{name}",
+    prefix="/community/{community_name}",
     tags=['posting']
 )
 
 
-@router.get("/{id}", response_model_exclude_none=True)
-def get_post():
-    pass
+@router.get("/{id}", response_model=ResponsePostingDetail)
+async def get_post(
+        posting: Mapping = Depends(valid_posting_id)
+):
+    return posting
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
