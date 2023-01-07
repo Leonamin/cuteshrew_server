@@ -6,7 +6,7 @@ from app.community.exceptions import UnauthorizedException
 
 from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo
 from .dependency import valid_community_name
-from .service import create_community
+from app.community import service
 from app.user import dependency as user_dependency
 
 router = APIRouter(
@@ -22,12 +22,12 @@ def get_community_by_name(community: Mapping = Depends(valid_community_name)):
     
 
 @router.post('', status_code=status.HTTP_201_CREATED)
-async def create(
+async def create_community(
     new_community: ReqeustCommunityCreate, 
     can_create: bool = Depends(user_dependency.valid_current_user_admin),
 ):
     if can_create:
-        await create_community(
+        await service.create_community(
             community_name=new_community.name,
             community_showname=new_community.showname,
             authority=new_community.authority,
@@ -38,10 +38,17 @@ async def create(
 # 204 에러는 Content-Length를 가질 수 없다
 
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def destroy(id: int):
-    pass
-
+@router.delete('', status_code=status.HTTP_204_NO_CONTENT)
+async def destroy_community(
+    community_id: int,
+    can_destroy: bool = Depends(user_dependency.valid_current_user_admin),
+    ):
+    if can_destroy:
+        await service.delete_community(community_id=community_id)
+        pass
+    else:
+        raise UnauthorizedException()
+    
 # 개별 커뮤니티 화면에서 요청하게 될 함수
 @router.get('/{name}/page/{page_num}', response_model_exclude_none=True)
 def get_page(name: str, page_num: int, count_per_page: Optional[int] = default_count_per_page):
