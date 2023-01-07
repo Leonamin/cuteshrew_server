@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.community.exceptions import UnauthorizedException
 
 from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo
-from .dependency import valid_community_name
+from .dependency import valid_community_name, valid_load_cound
 from app.community import service
 from app.user import dependency as user_dependency
 
@@ -16,10 +16,22 @@ router = APIRouter(
 default_community_count = 5
 default_count_per_page = 15
 
-@router.get('', response_model=ResponseCommunityInfo)
+@router.get('/all', response_model=List[ResponseCommunityInfo])
+async def get_communities(
+    load_count: int = Depends(valid_load_cound),
+):
+    return await service.get_communities(load_count)
+    
+
+@router.get('/info', response_model=ResponseCommunityInfo)
 def get_community_by_name(community: Mapping = Depends(valid_community_name)):
     return community
-    
+
+
+# 개별 커뮤니티 화면에서 요청하게 될 함수
+@router.get('/{name}/page/{page_num}', response_model_exclude_none=True)
+def get_page(name: str, page_num: int, count_per_page: Optional[int] = default_count_per_page):
+    pass
 
 @router.post('', status_code=status.HTTP_201_CREATED)
 async def create_community(
@@ -48,8 +60,3 @@ async def destroy_community(
         pass
     else:
         raise UnauthorizedException()
-    
-# 개별 커뮤니티 화면에서 요청하게 될 함수
-@router.get('/{name}/page/{page_num}', response_model_exclude_none=True)
-def get_page(name: str, page_num: int, count_per_page: Optional[int] = default_count_per_page):
-    pass
