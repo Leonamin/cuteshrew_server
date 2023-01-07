@@ -5,8 +5,10 @@ from pydantic import SecretStr
 
 from app.dependency import Authority
 from app.posting import service
-from app.posting.exceptions import PostingNotFound
+from app.posting.schemas import RequestPostingCreate
+from app.posting.exceptions import PostingNotFound, NeedPasswordException, UnauthorizedException
 from app.community import dependency as community_dependency
+from app.user import dependency as user_dependency
 
 
 async def valid_posting_id(
@@ -21,3 +23,12 @@ async def valid_posting_id(
     if not posting:
         raise PostingNotFound()
     return posting
+
+
+def can_user_write_posting(
+    community: Mapping,
+    user: Mapping
+) -> Mapping:
+    if (community.authority.value > user.authority.value):
+        raise UnauthorizedException()
+    return community
