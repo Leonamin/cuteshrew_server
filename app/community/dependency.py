@@ -12,6 +12,7 @@ from .exceptions import CommunityNotFound, InvalidLoadCountException, InvalidCom
 async def valid_community_name(community_name: str) -> Mapping:
     if community_name == 'info' or \
             community_name == 'all' or \
+            community_name == 'main' or \
             community_name == 'page':
         raise InvalidCommunityName()
 

@@ -1,10 +1,11 @@
 from typing import List, Mapping, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from app.community.constants import MAIN_PAGE_COMMUNITY_LOAD_COUNT, MAIN_PAGE_POSTING_LOAD_COUNT
 
 from app.community.exceptions import UnauthorizedException
 
-from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo
+from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo, ResponseMainCommunityInfo
 from .dependency import valid_community_name, valid_load_cound
 from app.community import service
 from app.user import dependency as user_dependency
@@ -35,6 +36,14 @@ async def get_community_by_name(community: Mapping = Depends(valid_community_nam
     community.posting_count = await posting_service.get_posting_count_by_community_id(community.id)
     return community
 
+# 메인페이지 화면에서 요청하게될 함수
+@router.get('/main', response_model=List[ResponseMainCommunityInfo], response_model_exclude_none=True)
+async def get_main_page():
+    communities: List[ResponseMainCommunityInfo] = await service.get_communities(MAIN_PAGE_COMMUNITY_LOAD_COUNT)
+    for i in range(len(communities)):
+        communities[i].latest_postings = await posting_service.get_postings_by_community_id(communities[i].id, MAIN_PAGE_POSTING_LOAD_COUNT)
+    
+    return communities
 
 # 개별 커뮤니티 화면에서 요청하게 될 함수
 @router.get('/{name}/page/{page_num}', response_model_exclude_none=True)
