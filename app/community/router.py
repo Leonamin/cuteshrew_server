@@ -1,12 +1,12 @@
 from typing import List, Mapping, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.community.constants import MAIN_PAGE_COMMUNITY_LOAD_COUNT, MAIN_PAGE_POSTING_LOAD_COUNT
+from app.community.constants import DEFAULT_COUNT_PER_PAGE, MAIN_PAGE_COMMUNITY_LOAD_COUNT, MAIN_PAGE_POSTING_LOAD_COUNT
 
 from app.community.exceptions import UnauthorizedException
 
-from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo, ResponseMainCommunityInfo
-from .dependency import valid_community_name, valid_load_cound
+from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo, ResponseCommunityPageInfo, ResponseMainCommunityInfo
+from .dependency import valid_community_name, valid_load_cound, valid_skip_count
 from app.community import service
 from app.user import dependency as user_dependency
 from app.posting import service as posting_service
@@ -15,8 +15,6 @@ router = APIRouter(
     prefix="/community",
     tags=['community']
 )
-default_community_count = 5
-default_count_per_page = 15
 
 @router.get('/all', response_model=List[ResponseCommunityInfo])
 async def get_communities(
@@ -46,9 +44,16 @@ async def get_main_page():
     return communities
 
 # 개별 커뮤니티 화면에서 요청하게 될 함수
-@router.get('/{name}/page/{page_num}', response_model_exclude_none=True)
-def get_page(name: str, page_num: int, count_per_page: Optional[int] = default_count_per_page):
-    pass
+@router.get('/{community_name}/page/{page_num}', response_model=ResponseCommunityPageInfo, response_model_exclude_none=True)
+async def get_page(
+    valid_values: dict = Depends(valid_skip_count)
+):
+    community: ResponseCommunityPageInfo = valid_values['community']
+    count_per_page = valid_values['count_per_page']
+    skip_count = valid_values['skip_count']
+    community.page_postings = await posting_service.get_postings_by_community_id(
+        community.id, count_per_page, skip_count)
+    return community
 
 @router.post('', status_code=status.HTTP_201_CREATED)
 async def create_community(

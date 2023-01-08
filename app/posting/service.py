@@ -34,12 +34,13 @@ async def get_posting_by_id(posting_id: int):
         raise UnknownError(detail=e.__class__.__name__)
     
 # 검사 로직 없이 데이터 반환
-async def get_postings_by_community_id(community_id: int, load_count: int):
+async def get_postings_by_community_id(community_id: int, load_count: int, skip_offset: Optional[int] = None):
     try:
         db: Session = next(database.get_db())
         postings: Posting = db.query(Posting)\
             .filter(Posting.community_id == community_id)\
             .order_by(Posting.published_at.desc())\
+            .offset(skip_offset)\
             .limit(load_count)\
             .all()
         return postings

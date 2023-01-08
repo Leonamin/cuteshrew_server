@@ -19,3 +19,18 @@ def InvalidLoadCountException():
 def InvalidCommunityName():
     return HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                          detail="/info /page /all is not valid name for community")
+
+
+def InvalidPageNum():
+    return HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                         detail="page num must be over than 0")
+
+
+def InvalidPageLoadCount():
+    return HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                         detail="Load count must be less than 100 or over than 0")
+
+
+def ExceededPageNum():
+    return HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                         detail="Page num * load count exceed total posting count")
