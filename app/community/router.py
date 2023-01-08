@@ -8,6 +8,7 @@ from .schemas import ReqeustCommunityCreate, ResponseCommunityInfo
 from .dependency import valid_community_name, valid_load_cound
 from app.community import service
 from app.user import dependency as user_dependency
+from app.posting import service as posting_service
 
 router = APIRouter(
     prefix="/community",
@@ -20,11 +21,18 @@ default_count_per_page = 15
 async def get_communities(
     load_count: int = Depends(valid_load_cound),
 ):
-    return await service.get_communities(load_count)
+    communities: List[ResponseCommunityInfo] = await service.get_communities(load_count)
+    
+    for i in range(len(communities)):
+        communities[i].posting_count = await posting_service.get_posting_count_by_community_id(communities[i].id)
+    return communities
+        
     
 
 @router.get('/info', response_model=ResponseCommunityInfo)
-def get_community_by_name(community: Mapping = Depends(valid_community_name)):
+async def get_community_by_name(community: Mapping = Depends(valid_community_name)):
+    community: ResponseCommunityInfo = community
+    community.posting_count = await posting_service.get_posting_count_by_community_id(community.id)
     return community
 
 
