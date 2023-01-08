@@ -1,10 +1,10 @@
-from typing import Mapping
+from typing import Mapping, Optional
 from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
-from app.posting.dependency import valid_posting_id, can_user_write_posting
+from app.posting.dependency import valid_posting_id, verify_posting, can_user_write_posting
 from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate
-from app.posting.service import create_posting
+from app.posting import service
 from app.posting.exceptions import UnauthorizedException
 from app.community import dependency as community_dependency
 from app.user import dependency as user_dependency
@@ -17,7 +17,8 @@ router = APIRouter(
 
 @router.get("/{id}", response_model=ResponsePostingDetail)
 async def get_post(
-        posting: Mapping = Depends(valid_posting_id)
+    community: Mapping = Depends(community_dependency.valid_community_name),
+    posting: Mapping = Depends(verify_posting)
 ):
     return posting
 
@@ -31,7 +32,7 @@ async def create_post(
 ):
     if can_user_write_posting(community, user):
         print(new_posting.password)
-        await create_posting(
+        await service.create_posting(
             community.id,
             user.id,
             new_posting.title,
@@ -41,13 +42,3 @@ async def create_post(
         )
     else:
         raise UnauthorizedException()
-
-
-@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update_post():
-    pass
-
-
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_post():
-    pass
