@@ -8,7 +8,14 @@ from app.exceptions import DatabaseError, HashTypeError, HashValueError, Unknown
 from app.auth.utils import Hash
 from app.models.models import Community, Posting
 from app.posting.exceptions import PostingNotFound, InvalidPasswordException, NeedPasswordException
-    
+
+# 서비스의 역할
+# 데이터 검증은 하지 않는다.
+# 데이터 읽기/쓰기에 필요한 동작만 한다. (예 - 검색, 읽기 쓰기 시 DB에 맞는 데이터 변환)
+# 서비스 계층 <-> 데이터베이스 계층 이므로
+# 서비스 계층으로 들어온 데이터를 데이터베이스에 맞게 입출력하는 절차만 한다.
+# 나중에 서버가 대형화 되면 그 때 또 도메인 계층을 제대로 만들겠지
+
 # 검사 로직 없이 데이터 반환
 async def get_posting_by_id(posting_id: int):
     try:
@@ -56,6 +63,26 @@ async def create_posting(
         db.add(new_posting)
         db.commit()
         db.refresh(new_posting)
+    except HTTPException as e:
+        raise e
+    except ValueError as e:
+        raise HashValueError()
+    except TypeError as e:
+        raise HashTypeError()
+    except exc.SQLAlchemyError as e:
+        raise DatabaseError(detail='sqlalchemy error')
+    except Exception as e:
+        raise UnknownError(detail=e.__class__.__name__)
+    
+# 검사 로직 없이 데이터 반환
+async def delete_posting_by_id(posting_id: int):
+    try:
+        db: Session = next(database.get_db())
+        posting = db.query(Posting).filter(
+            Posting.id == posting_id,
+        )
+        posting.delete(synchronize_session=False)
+        db.commit()
     except HTTPException as e:
         raise e
     except ValueError as e:
