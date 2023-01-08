@@ -81,14 +81,12 @@ async def delete_posting_by_id(posting_id: int):
         posting = db.query(Posting).filter(
             Posting.id == posting_id,
         )
+        if not posting.first():
+            raise PostingNotFound()
         posting.delete(synchronize_session=False)
         db.commit()
     except HTTPException as e:
         raise e
-    except ValueError as e:
-        raise HashValueError()
-    except TypeError as e:
-        raise HashTypeError()
     except exc.SQLAlchemyError as e:
         raise DatabaseError(detail='sqlalchemy error')
     except Exception as e:

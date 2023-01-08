@@ -2,7 +2,7 @@ from typing import Mapping, Optional
 from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
-from app.posting.dependency import valid_posting_id, verify_posting, can_user_write_posting
+from app.posting.dependency import valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting
 from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate
 from app.posting import service
 from app.posting.exceptions import UnauthorizedException
@@ -42,3 +42,10 @@ async def create_post(
         )
     else:
         raise UnauthorizedException()
+
+
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(
+    posting: Mapping = Depends(can_user_delete_posting)
+):
+    await service.delete_posting_by_id(posting.id)
