@@ -91,3 +91,42 @@ async def delete_posting_by_id(posting_id: int):
         raise DatabaseError(detail='sqlalchemy error')
     except Exception as e:
         raise UnknownError(detail=e.__class__.__name__)
+    
+async def update_posting(
+    posting_id: int,
+    community_id: int,
+    title: str,
+    body: str,
+    is_locked: bool,
+    password: Optional[str] = None,
+):  
+    try:
+        db: Session = next(database.get_db())
+
+        posting: Query = db.query(Posting).filter(Posting.id == posting_id)
+        if not posting.first():
+            raise PostingNotFound()
+        if (is_locked):
+                password = Hash.bcrypt(password)
+        # 이게 posting 쿼리로 잡힌 모든 테이블을 업데이트 하는건데
+        # id가 중복될리는 없으니까 상관 없겠지?
+        posting.update({
+            'community_id' : community_id,
+            'title' : title,
+            'body' : body,
+            'is_locked' : is_locked,
+            'password' : password,
+            'updated_at' : int(time.time())
+        })
+        db.commit()
+    except HTTPException as e:
+        raise e
+    except ValueError as e:
+        raise HashValueError()
+    except TypeError as e:
+        raise HashTypeError()
+    except exc.SQLAlchemyError as e:
+        raise DatabaseError(detail='sqlalchemy error')
+    except Exception as e:
+        raise UnknownError(detail=e.__class__.__name__)
+    return 'updated'

@@ -2,7 +2,7 @@ from typing import Mapping, Optional
 from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
-from app.posting.dependency import valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting
+from app.posting.dependency import can_user_modify_posting, valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting
 from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate
 from app.posting import service
 from app.posting.exceptions import UnauthorizedException
@@ -49,3 +49,28 @@ async def delete_post(
     posting: Mapping = Depends(can_user_delete_posting)
 ):
     await service.delete_posting_by_id(posting.id)
+
+
+@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
+async def update_post(
+    new_posting: RequestPostingCreate,
+    new_community_name: Optional[str] = None,
+    origin_community: Mapping = Depends(
+        community_dependency.valid_community_name),
+    posting: Mapping = Depends(valid_posting_id),
+    user: Mapping = Depends(user_dependency.get_current_user_info)
+):
+    if new_community_name != None:
+        new_community = await community_dependency.valid_community_name(
+            new_community_name)
+    else:
+        new_community = origin_community
+    if (can_user_modify_posting(new_community, user, posting)):
+        return await service.update_posting(
+            posting.id,
+            new_community.id,
+            new_posting.title,
+            new_posting.body,
+            new_posting.is_locked,
+            new_posting.password
+        )

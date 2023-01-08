@@ -69,3 +69,14 @@ async def can_user_delete_posting(
         (user.authority.value < community.authority.value):
             raise UnauthorizedException()
     return posting
+
+# 오직 게시글 작성자만 수정할 수 있음
+# 게시글 작성자는 업데이트 하려는 커뮤니티 기존이든 신규든 권한이 있어야 수정이 가능함
+def can_user_modify_posting(
+    community: Mapping,
+    user: Mapping,
+    posting: Mapping
+) -> Mapping:
+    if (community.authority.value > user.authority.value) or (posting.user_id != user.id):
+        raise UnauthorizedException()
+    return community
