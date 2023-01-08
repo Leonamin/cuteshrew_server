@@ -6,8 +6,9 @@ from pydantic import SecretStr
 from app.dependency import Authority
 from app.exceptions import HashTypeError, HashValueError, UnknownError
 from app.posting import service
+from app.posting.constants import MAX_POSTING_LOAD_COUNT
 from app.posting.schemas import RequestPostingCreate
-from app.posting.exceptions import PostingNotFound, NeedPasswordException, InvalidPasswordException, UnauthorizedException
+from app.posting.exceptions import InvalidLoadCountException, PostingNotFound, NeedPasswordException, InvalidPasswordException, UnauthorizedException
 from app.community import dependency as community_dependency
 from app.user import dependency as user_dependency
 
@@ -80,3 +81,11 @@ def can_user_modify_posting(
     if (community.authority.value > user.authority.value) or (posting.user_id != user.id):
         raise UnauthorizedException()
     return community
+
+# 최대 개수 제한
+def valid_load_cound(load_count: Optional[int] = None) -> int:
+    if load_count == None:
+        load_count = MAX_POSTING_LOAD_COUNT
+    if (load_count > MAX_POSTING_LOAD_COUNT or load_count <= 0):
+        raise InvalidLoadCountException()
+    return load_count

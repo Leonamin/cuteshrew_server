@@ -32,6 +32,24 @@ async def get_posting_by_id(posting_id: int):
         raise DatabaseError(detail='sqlalchemy error')
     except Exception as e:
         raise UnknownError(detail=e.__class__.__name__)
+    
+# 검사 로직 없이 데이터 반환
+async def get_postings_by_community_id(community_id: int, load_count: int):
+    try:
+        db: Session = next(database.get_db())
+        postings: Posting = db.query(Posting)\
+            .filter(Posting.community_id == community_id)\
+            .order_by(Posting.published_at.desc())\
+            .limit(load_count)\
+            .all()
+        return postings
+    # TODO Exception 순서 확인 캐치되는 종류를 알아봐야 겠다.
+    except HTTPException as e:
+        raise e
+    except exc.SQLAlchemyError as e:
+        raise DatabaseError(detail='sqlalchemy error')
+    except Exception as e:
+        raise UnknownError(detail=e.__class__.__name__)
 
 # 무적권 is_locked가 true일 때만 password가 None다
 async def create_posting(
