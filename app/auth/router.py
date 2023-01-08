@@ -25,7 +25,7 @@ async def signin(
 ):
     user = await user_service.get_user_by_user_name(request.username)
     if not Hash.verify(user.password, request.password):
-        raise IncorrectPassword
+        raise IncorrectPassword()
         
     expires_delta = timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     access_token, expire_time = create_access_token(
