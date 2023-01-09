@@ -38,11 +38,11 @@ class User(Base):
     postings = relationship("Posting", back_populates="creator")
     comments = relationship("Comment", back_populates="creator")
 
-
+# FIXME IMPORTANT!!!!!!! name이 겹치면 안된다!
 class Community(Base):
     __tablename__ = "communities"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     showname = Column(String)
     # 권한 어드민 일반 등
     authority = Column(Enum(Authority))
@@ -51,7 +51,7 @@ class Community(Base):
 
     postings = relationship("Posting", back_populates="own_community")
     postings_count = column_property(
-        select([func.count(Posting.id)]).scalar_subquery())
+        select([func.count(Posting.id)]).filter(Posting.community_id == id).scalar_subquery())
 
 
 class Comment(Base):
