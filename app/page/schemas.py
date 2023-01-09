@@ -14,7 +14,7 @@ class ResponsePostingPage(posting_schemas.PostingSchemasBaseModel):
             "published_at" : 1672791019,
             "updated_at" : 1672791019,
             "is_locked" : False,
-            "comment_count": int
+            "comment_count": 13
         }
 
 class ResponseMainPage(community_schemas.ResponseCommunityInfo):
