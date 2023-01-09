@@ -7,14 +7,14 @@ from app.exceptions import DatabaseError, UnknownError
 from app.models.models import Posting, Comment
 
 async def get_postings_by_user_id(
-    user_id: int, load_count: int, start_id: Optional[int] = None):
+    user_id: int, load_count: int, skip_until_id: Optional[int] = None):
     try:
         db: Session = next(database.get_db())
-        if start_id != None:
+        if skip_until_id != None:
             postings: Posting = db.query(Posting)\
                 .filter(Posting.user_id == user_id)\
                 .order_by(Posting.id.desc())\
-                .where(Posting.id < start_id)\
+                .where(Posting.id < skip_until_id)\
                 .limit(load_count)\
                 .all()
         else:
@@ -34,14 +34,14 @@ async def get_postings_by_user_id(
 
 
 async def get_comments_by_user_id(
-    user_id: int, load_count: int, start_id: Optional[int] = None):
+    user_id: int, load_count: int, skip_until_id: Optional[int] = None):
     try:
         db: Session = next(database.get_db())
-        if start_id != None:
+        if skip_until_id != None:
             comments: Comment = db.query(Comment)\
                 .filter(Comment.user_id == user_id)\
                 .order_by(Comment.id.desc())\
-                .where(Comment.id < start_id)\
+                .where(Comment.id < skip_until_id)\
                 .limit(load_count)\
                 .all()
         else:
