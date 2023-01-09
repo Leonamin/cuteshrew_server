@@ -10,7 +10,7 @@ from app.community import dependency as community_dependency
 from app.user import dependency as user_dependency
 
 router = APIRouter(
-    prefix="/community/{community_name}",
+    prefix="/posting",
     tags=['posting']
 )
 
