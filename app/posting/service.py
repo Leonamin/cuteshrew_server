@@ -88,6 +88,7 @@ async def create_posting(
         db.add(new_posting)
         db.commit()
         db.refresh(new_posting)
+        return new_posting
     except HTTPException as e:
         raise e
     except ValueError as e:

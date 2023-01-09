@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
 from app.posting.dependency import can_user_modify_posting, valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting, valid_load_cound
-from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate, ResponsePostingPreview
+from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate, ResponsePostingPreview, PostingSchemasBaseModel
 from app.posting import service
 from app.posting.exceptions import UnauthorizedException
 from app.community import dependency as community_dependency
@@ -41,7 +41,7 @@ async def get_posting(
     return posting
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=PostingSchemasBaseModel,  status_code=status.HTTP_201_CREATED)
 async def create_posting(
     new_posting: RequestPostingCreate,
     community: Mapping = Depends(
@@ -49,8 +49,7 @@ async def create_posting(
     user: Mapping = Depends(user_dependency.get_current_user_info)
 ):
     if can_user_write_posting(community, user):
-        print(new_posting.password)
-        await service.create_posting(
+        return await service.create_posting(
             community.id,
             user.id,
             new_posting.title,

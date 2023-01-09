@@ -31,6 +31,7 @@ class RequestPostingCreate(BaseModel):
             "is_locked" : False,
             "password" : "notyethashed"
         }
+        
 
 class PostingSchemasBaseModel(BaseModel):
     id: int
