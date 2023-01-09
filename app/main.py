@@ -1,12 +1,11 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core import config
 
 from app.core.config import settings
 from app.dependency import get_settings
-from .models import models
-from .database import engine
-from .routers import api, api_v2
+from app.models import models
+from app.database import engine
+from app.routers import api_v2
 
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -38,13 +37,6 @@ def get_application():
     )
     
     # _app.dependency_overrides[function_name] = override_function_name
-
-    # _app.include_router(community.router)
-    # _app.include_router(posting.router)
-    # _app.include_router(user.router)
-    # _app.include_router(authentication.router)
-    # _app.include_router(comment.router)
-    _app.include_router(api.router)
     _app.include_router(api_v2.router)
 
     return _app
