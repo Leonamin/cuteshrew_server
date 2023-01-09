@@ -1,6 +1,9 @@
+from typing import List, Mapping
 from fastapi import APIRouter
 from fastapi import APIRouter, Depends, status
 
+from app.comment.schemas import ResponseCommentDetail
+from app.comment.dependency import valid_comment_id, valid_comment_posting_id
 
 router = APIRouter(
     # prefix="/community/{community_name}/{post_id}/comment",
@@ -9,9 +12,18 @@ router = APIRouter(
 )
 
 
-@router.get("/{page_num}", response_model_exclude_none=True)
-def get_page(community_name: str, post_id: int, page_num: int, count_per_page: int):
-    pass
+@router.get("/{comment_id}", response_model=ResponseCommentDetail)
+async def get_comment(
+    comment: Mapping = Depends(valid_comment_id)
+):
+    return comment
+
+
+@router.get("/list/{posting_id}", response_model=List[ResponseCommentDetail])
+async def get_comments(
+    comments: List[Mapping] = Depends(valid_comment_posting_id)
+):
+    return comments
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
