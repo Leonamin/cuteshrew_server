@@ -17,8 +17,10 @@ class Posting(Base):
     is_locked = Column(Boolean)
     password = Column(String)
 
-    own_community = relationship("Community", back_populates="postings")
-    creator = relationship("User", back_populates="postings")
+    # 뭐지 이거? 장난하는건가? 아래 대로 lazy를 붙이니까 된다.
+    # https://stackoverflow.com/questions/13967093/parent-instance-is-not-bound-to-a-session-lazy-load-operation-of-attribute-acc
+    own_community = relationship("Community", back_populates="postings", lazy='subquery')
+    creator = relationship("User", back_populates="postings", lazy='subquery')
     comments = relationship("Comment", back_populates="posting")
 
 
