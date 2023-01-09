@@ -17,9 +17,9 @@ from app.auth.utils import Hash
 
 # id를 통해 포스팅이 존재하는지 확인
 async def valid_posting_id(
-    id: int,
+    posting_id: int,
 ) -> Mapping:
-    posting = await service.get_posting_by_id(id)
+    posting = await service.get_posting_by_id(posting_id)
 
     if not posting:
         raise PostingNotFound()

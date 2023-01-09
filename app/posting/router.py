@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.get("/details", response_model=List[ResponsePostingDetail])
-async def get_postings(
+async def get_detail_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
     load_count: int = Depends(valid_load_cound)
 ):
@@ -25,7 +25,7 @@ async def get_postings(
 
 
 @router.get("/previews", response_model=List[ResponsePostingPreview])
-async def get_postings(
+async def get_preview_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
     load_count: int = Depends(valid_load_cound)
 ):
@@ -33,7 +33,7 @@ async def get_postings(
     return postings
 
 
-@router.get("/{id}", response_model=ResponsePostingDetail)
+@router.get("/{posting_id}", response_model=ResponsePostingDetail)
 async def get_posting(
     community: Mapping = Depends(community_dependency.valid_community_name),
     posting: Mapping = Depends(verify_posting)
@@ -61,14 +61,14 @@ async def create_posting(
         raise UnauthorizedException()
 
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{posting_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_posting(
     posting: Mapping = Depends(can_user_delete_posting)
 ):
     await service.delete_posting_by_id(posting.id)
 
 
-@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{posting_id}', status_code=status.HTTP_202_ACCEPTED)
 async def update_posting(
     new_posting: RequestPostingCreate,
     new_community_name: Optional[str] = None,
