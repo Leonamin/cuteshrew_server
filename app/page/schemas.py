@@ -18,7 +18,7 @@ class ResponsePostingPage(posting_schemas.PostingSchemasBaseModel):
         }
 
 class ResponseMainPage(community_schemas.ResponseCommunityInfo):
-    latest_postings: List[ResponsePostingPage]
+    posting_list: List[ResponsePostingPage]
     
     class Config():
         orm_mode = True
@@ -36,7 +36,7 @@ class ResponseMainPage(community_schemas.ResponseCommunityInfo):
         }
 
 class ResponseCommunityPage(community_schemas.ResponseCommunityInfo):
-    page_postings: List[ResponsePostingPage]
+    posting_list: List[ResponsePostingPage]
     
     class Config():
         orm_mode = True
