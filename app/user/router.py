@@ -1,9 +1,11 @@
 from typing import Mapping
 from fastapi import APIRouter, Depends, status
 
-from .dependency import valid_user_name, valid_user_email
-from .schemas import RequestUserCreate, ResponseUserDetail
-from .exceptions import UserNotFoundException
+from app.user.dependency import valid_user_name, valid_user_email
+from app.user.schemas import RequestUserCreate, ResponseUserDetail
+from app.user.exceptions import UserNotFoundException
+from app.posting import service as posting_service
+from app.comment import service as comment_service
 
 
 router = APIRouter(
@@ -25,4 +27,8 @@ def create_user_for_admin():
 
 @router.get('/search', response_model=ResponseUserDetail)
 async def get_user_by_name(user: Mapping = Depends(valid_user_name)):
+    response: ResponseUserDetail = user
+    response.posting_count = await posting_service.get_posting_count_by_user_id(response.id)
+    response.comment_count = await comment_service.get_comment_count_by_user_id(response.id)
+
     return user

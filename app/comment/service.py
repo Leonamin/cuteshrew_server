@@ -49,6 +49,12 @@ async def get_comment_count_by_posting_id(
     db: Session = next(database.get_db())
     return db.query(Comment).filter(Comment.post_id == posting_id).count()
 
+async def get_comment_count_by_user_id(
+    user_id: int
+):
+    db: Session = next(database.get_db())
+    return db.query(Comment).filter(Comment.user_id == user_id).count()
+
 async def create_comment(
     posting_id: int,
     user_id: int,

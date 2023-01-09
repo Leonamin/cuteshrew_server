@@ -56,6 +56,12 @@ async def get_posting_count_by_community_id(
     db: Session = next(database.get_db())
     return db.query(Posting).filter(Posting.community_id == community_id).count()
 
+async def get_posting_count_by_user_id(
+    user_id: int
+):
+    db: Session = next(database.get_db())
+    return db.query(Posting).filter(Posting.user_id == user_id).count()
+
 # 무적권 is_locked가 true일 때만 password가 None다
 async def create_posting(
     community_id: int,
