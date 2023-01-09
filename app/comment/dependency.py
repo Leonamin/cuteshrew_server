@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from app.comment import service
 from app.comment.constants import DEFAULT_COMMENT_LOAD_COUNT, MAX_COMMENT_LOAD_COUNT
-from app.comment.exceptions import CommentNotFound, InvalidLoadCountException
+from app.comment.exceptions import CommentNotFound, InvalidLoadCountException, ExceededPageNum
 from app.dependency import Authority
 from app.exceptions import UnauthorizedException
 
@@ -49,3 +49,11 @@ async def can_user_delete_comment(
         if user.authority.value < Authority.SUB_ADMIN.value:
             raise UnauthorizedException()
     return comment.id
+
+# 페이지 숫자임 절대 바꾸지 말것
+async def valid_page_num(
+    page_num: int,
+) -> int:
+    if page_num <= 0:
+        ExceededPageNum()
+    return page_num

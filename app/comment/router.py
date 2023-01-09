@@ -4,9 +4,10 @@ from fastapi import APIRouter, Depends, status
 
 from app.comment import service
 from app.comment.schemas import ReqeustCommentCreate, ResponseCommentDetail
-from app.comment.dependency import can_user_delete_comment, valid_comment_id, valid_comment_posting_id
+from app.comment.dependency import can_user_delete_comment, valid_load_count, valid_comment_id, valid_page_num, valid_comment_posting_id
 from app.posting import dependency as posting_dependency
 from app.user import dependency as user_dependency
+from app.search import schemas as search_schemas
 
 router = APIRouter(
     # prefix="/community/{community_name}/{post_id}/comment",
@@ -27,6 +28,16 @@ async def get_comments(
     comments: List[Mapping] = Depends(valid_comment_posting_id)
 ):
     return comments
+
+
+@router.get("/page/{posting_id}/comment/{page_num}", response_model=List[search_schemas.ResponseSearchCommentDetail])
+async def get_comment_page(
+    posting: Mapping = Depends(posting_dependency.valid_posting_id),
+    page_num: int = Depends(valid_page_num),
+    load_count: int = Depends(valid_load_count)
+):
+    skip_offset = (page_num - 1) * load_count
+    return await service.get_comments_by_posting_id(posting.id, load_count, skip_offset)
 
 
 @router.post("/create/{posting_id}", status_code=status.HTTP_201_CREATED)
