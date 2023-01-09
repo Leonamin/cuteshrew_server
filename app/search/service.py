@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session, exc
 from fastapi import HTTPException
 
@@ -11,14 +11,14 @@ async def get_postings_by_user_id(
     try:
         db: Session = next(database.get_db())
         if skip_until_id != None:
-            postings: Posting = db.query(Posting)\
+            postings: List[Posting] = db.query(Posting)\
                 .filter(Posting.user_id == user_id)\
                 .order_by(Posting.id.desc())\
                 .where(Posting.id < skip_until_id)\
                 .limit(load_count)\
                 .all()
         else:
-            postings: Posting = db.query(Posting)\
+            postings: List[Posting] = db.query(Posting)\
                 .filter(Posting.user_id == user_id)\
                 .order_by(Posting.id.desc())\
                 .limit(load_count)\
