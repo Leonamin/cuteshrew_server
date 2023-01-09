@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
 from app.posting.dependency import can_user_modify_posting, valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting, valid_load_cound
-from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate
+from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate, ResponsePostingPreview
 from app.posting import service
 from app.posting.exceptions import UnauthorizedException
 from app.community import dependency as community_dependency
@@ -15,7 +15,16 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=List[ResponsePostingDetail])
+@router.get("/details", response_model=List[ResponsePostingDetail])
+async def get_postings(
+    community: Mapping = Depends(community_dependency.valid_community_name),
+    load_count: int = Depends(valid_load_cound)
+):
+    postings = await service.get_postings_by_community_id(community.id, load_count)
+    return postings
+
+
+@router.get("/previews", response_model=List[ResponsePostingPreview])
 async def get_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
     load_count: int = Depends(valid_load_cound)

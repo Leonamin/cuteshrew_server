@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, validator
 
 from app.posting.constants import MAX_POSTING_TITLE_LENGTH
 from app.user import schemas as user_schemas
+from app.community import schemas as community_schemas
 
 # 맨날 헷갈리는 거지만 아래 처럼 뒤에 ,가 있으면 파싱 에러난다.
 # Expecting property name enclosed in double quotes
@@ -51,7 +52,7 @@ class PostingSchemasBaseModel(BaseModel):
 class ResponsePostingPreview(PostingSchemasBaseModel):
     comment_comunt: Optional[int]
     creator: Optional[user_schemas.ResponseUserPreview]
-    # own_community: Optional[None]
+    own_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]
 
     class Config():
         schema_extra = {
@@ -70,7 +71,8 @@ class ResponsePostingDetail(PostingSchemasBaseModel):
     body: str = Field(min_length=1)
     comment_comunt: Optional[int]
     creator: Optional[user_schemas.ResponseUserPreview]
-    # own_community: Optional[None]
+    # belongs_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]
+    own_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]
     
     class Config():
         schema_extra = {
