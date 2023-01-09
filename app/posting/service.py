@@ -22,8 +22,6 @@ async def get_posting_by_id(posting_id: int):
         db: Session = next(database.get_db())
         posting: Posting = db.query(Posting)\
             .filter(Posting.id == posting_id).first()
-        if not posting:
-            raise PostingNotFound()
         return posting
     # TODO Exception 순서 확인 캐치되는 종류를 알아봐야 겠다.
     except HTTPException as e:
@@ -107,8 +105,6 @@ async def delete_posting_by_id(posting_id: int):
         posting = db.query(Posting).filter(
             Posting.id == posting_id,
         )
-        if not posting.first():
-            raise PostingNotFound()
         posting.delete(synchronize_session=False)
         db.commit()
     except HTTPException as e:
@@ -130,8 +126,6 @@ async def update_posting(
         db: Session = next(database.get_db())
 
         posting: Query = db.query(Posting).filter(Posting.id == posting_id)
-        if not posting.first():
-            raise PostingNotFound()
         if (is_locked):
                 password = Hash.bcrypt(password)
         # 이게 posting 쿼리로 잡힌 모든 테이블을 업데이트 하는건데

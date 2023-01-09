@@ -15,8 +15,6 @@ async def get_communities(load_count: int):
         db: Session = next(database.get_db())
         communities = db.query(Community)\
             .limit(load_count).all()
-        if not len(communities):
-            raise CommunityNotFound()
     except exc.SQLAlchemyError as e:
         raise DatabaseError(detail='sqlalchemy error')
     return communities
@@ -62,8 +60,6 @@ async def delete_community(
     try:
         db: Session = next(database.get_db())
         community: Query = db.query(Community).filter(Community.id == community_id)
-        if not community.first():
-            raise CommunityNotFound()
         community.delete(synchronize_session=False)
         db.commit()
     except exc.SQLAlchemyError as e:

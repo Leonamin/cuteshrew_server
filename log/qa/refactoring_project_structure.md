@@ -1,8 +1,14 @@
 # 프로젝트 구조 리팩토링 기능 정리
+## 모듈
 - Community Module
 - Posting Module
 - Page Module
     - 커뮤니티에서 커뮤니티 정보와 게시글을, 게시글에서 게시글과 커뮤니티 정보를 가져오면 순환 참조가 되기 때문에 페이지라는 라우터를 따로 분리해서 커뮤니티, 게시글의 기능을 이용하고 둘의 데이터를 합쳐서 제공하는 모듈을 만들었다.
+## 서비스
+- 서비스에서는 데이터 검증을 하지 않는다 DB의 읽기,쓰기 에러만 검사한다.
+    - null값이 필요할 수도 있으므로 null을 그대로 보내거나 null safety가 필요하면 의존성을 통해 데이터 검사 후 가져오는 방식으로 한다.
+    - nullable: request -> service -> response
+    - non-null: request -> dependency -> service -> valid check -> response or exception
 # QA
 ## app.posting.router
 ### 가져오기

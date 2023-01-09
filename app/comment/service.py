@@ -13,8 +13,6 @@ async def get_comment_by_comment_id(comment_id: int):
         db: Session = next(database.get_db())
         comment: Comment = db.query(Comment)\
             .filter(Comment.id == comment_id).first()
-        if not comment:
-            raise CommentNotFound()
         return comment
     # TODO Exception 순서 확인 캐치되는 종류를 알아봐야 겠다.
     except HTTPException as e:
@@ -36,8 +34,6 @@ async def get_comments_by_posting_id(
             .offset(skip_offset)\
             .limit(load_count)\
             .all()
-        if not len(comment):
-            raise CommentNotFound()
         return comment
     # TODO Exception 순서 확인 캐치되는 종류를 알아봐야 겠다.
     except HTTPException as e:
@@ -125,8 +121,6 @@ async def update_comment_by_id(
         db: Session = next(database.get_db())
         
         comment: Query = db.query(Comment).filter(Comment.id == comment_id)
-        if not comment:
-            raise CommentNotFound()
         comment.update({'comment':comment})
         db.commit()
         return comment.first()
@@ -145,8 +139,6 @@ async def delete_comment_by_id(
         db: Session = next(database.get_db())
         
         comment = db.query(Comment).filter(Comment.id == comment_id)
-        if not comment:
-            raise CommentNotFound()
         comment.delete(synchronize_session=False)
         db.commit()
     except HTTPException as e:
