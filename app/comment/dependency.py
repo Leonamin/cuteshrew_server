@@ -5,9 +5,12 @@ from fastapi import Depends
 from app.comment import service
 from app.comment.constants import DEFAULT_COMMENT_LOAD_COUNT, MAX_COMMENT_LOAD_COUNT
 from app.comment.exceptions import CommentNotFound, InvalidLoadCountException
+from app.dependency import Authority
+from app.exceptions import UnauthorizedException
 
 from app.posting import service as posting_service
 from app.posting import dependency as posting_dependency
+from app.user import dependency as user_dependency
 
 
 async def valid_comment_id(
@@ -37,3 +40,12 @@ async def valid_comment_posting_id(
     if not len(comments):
         raise CommentNotFound()
     return comments
+
+async def can_user_delete_comment(
+    comment: Mapping = Depends(valid_comment_id),
+    user: Mapping = Depends(user_dependency.get_current_user_info)
+) -> int:
+    if user.id != comment.user_id:
+        if user.authority.value < Authority.SUB_ADMIN.value:
+            raise UnauthorizedException()
+    return comment.id

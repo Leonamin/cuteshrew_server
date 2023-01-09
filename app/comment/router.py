@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.comment import service
 from app.comment.schemas import ReqeustCommentCreate, ResponseCommentDetail
-from app.comment.dependency import valid_comment_id, valid_comment_posting_id
+from app.comment.dependency import can_user_delete_comment, valid_comment_id, valid_comment_posting_id
 from app.posting import dependency as posting_dependency
 from app.user import dependency as user_dependency
 
@@ -51,5 +51,7 @@ def update_comment(community_name: str, post_id: int, comment_id: int):
 
 
 @router.delete('/{comment_id}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_comment(community_name: str, post_id: int, comment_id: int):
-    pass
+async def delete_comment(
+    comment_id: int = Depends(can_user_delete_comment)
+):
+    return await service.delete_comment_by_id(comment_id)
