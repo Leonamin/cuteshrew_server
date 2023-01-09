@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Mapping
 from fastapi import APIRouter, Depends
 from app.community.constants import MAIN_PAGE_COMMUNITY_LOAD_COUNT, MAIN_PAGE_POSTING_LOAD_COUNT
 
@@ -28,7 +28,7 @@ async def get_main_page():
 
 # 개별 커뮤니티 화면에서 요청하게 될 함수
 @router.get('/{community_name}/page/{page_num}', response_model=ResponseCommunityPage, response_model_exclude_none=True)
-async def get_page(
+async def get_community_page(
     valid_values: dict = Depends(valid_skip_count)
 ):
     community: ResponseCommunityPage = valid_values['community']
