@@ -17,7 +17,7 @@ class ResponseCommentBaseModel(BaseModel):
     class Config():
         orm_mode = True
         schema_extra = {
-            "comment": {
+            "example": {
                 "id": 13,
                 "user_id": 1,
                 "created_at": 1672791019,
@@ -39,65 +39,68 @@ class ResponseCommentBaseModel(BaseModel):
 
 
 class ResponseCommentPreview(ResponseCommentBaseModel):
-    creator: Optional[user_schemas.ResponseUserPreview] = None
-    posting: Optional[posting_schemas.ResponsePostingPreview] = None
+    pass
+    # creator: Optional[user_schemas.ResponseUserPreview] = None
+    # posting: Optional[posting_schemas.ResponsePostingPreview] = None
 
-    class Config():
-        schema_extra = {
-            "comment": {
-                "id": 13,
-                "user_id": 1,
-                "created_at": 1672791019,
-                "post_id": 12,
-                "comment_class": 1,
-                "order": 3,
-                "group_id": 13,
-                "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
-                "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
-            },
-            "reply": {
-                "id": 16,
-                "user_id": 1,
-                "created_at": 1672791019,
-                "post_id": 12,
-                "comment_class": 2,
-                "order": 1,
-                "group_id": 13,
-                "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
-                "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
+    # class Config():
+    #     schema_extra = {
+    #         "comment": {
+    #             "id": 13,
+    #             "user_id": 1,
+    #             "created_at": 1672791019,
+    #             "post_id": 12,
+    #             "comment_class": 1,
+    #             "order": 3,
+    #             "group_id": 13,
+    #             "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
+    #             "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
+    #         },
+    #         "reply": {
+    #             "id": 16,
+    #             "user_id": 1,
+    #             "created_at": 1672791019,
+    #             "post_id": 12,
+    #             "comment_class": 2,
+    #             "order": 1,
+    #             "group_id": 13,
+    #             "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
+    #             "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
 
-            }
-        }
+    #         }
+    #     }
 
 
 class ResponseCommentDetail(ResponseCommentBaseModel):
     comment: str
-    creator: Optional[user_schemas.ResponseUserPreview] = None
-    posting: Optional[posting_schemas.ResponsePostingPreview] = None
+    # creator: Optional[user_schemas.ResponseUserPreview] = None
+    # posting: Optional[posting_schemas.ResponsePostingPreview] = None
 
     class Config():
         schema_extra = {
-            "comment": {
+            "example": {
                 "id": 13,
+                "comment": "Blessed are the peacemakers",
                 "user_id": 1,
                 "created_at": 1672791019,
                 "post_id": 12,
                 "comment_class": 1,
                 "order": 3,
                 "group_id": 13,
-                "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
-                "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
+                # "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
+                # "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
             },
             "reply": {
                 "id": 16,
+                "comment": "Blessed are the peacemakers",
                 "user_id": 1,
                 "created_at": 1672791019,
                 "post_id": 12,
                 "comment_class": 2,
                 "order": 1,
                 "group_id": 13,
-                "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
-                "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
+                # "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
+                # "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra
 
             }
         }
