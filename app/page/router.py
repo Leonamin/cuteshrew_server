@@ -6,6 +6,7 @@ from app.page.schemas import ResponseMainPage, ResponseCommunityPage
 from app.community.dependency import valid_skip_count
 from app.community import service
 from app.posting import service as posting_service
+from app.comment import service as comment_service
 
 router = APIRouter(
     prefix="/community",
@@ -18,6 +19,10 @@ async def get_main_page():
     communities: List[ResponseMainPage] = await service.get_communities(MAIN_PAGE_COMMUNITY_LOAD_COUNT)
     for i in range(len(communities)):
         communities[i].latest_postings = await posting_service.get_postings_by_community_id(communities[i].id, MAIN_PAGE_POSTING_LOAD_COUNT)
+        print(communities[i].name)
+        print(len(communities[i].latest_postings))
+        for j in range(len(communities[i].latest_postings)):
+            communities[i].latest_postings[j].comment_count = await comment_service.get_comment_count_by_posting_id(communities[i].latest_postings[j].id)
     
     return communities
 
@@ -31,4 +36,8 @@ async def get_page(
     skip_count = valid_values['skip_count']
     community.page_postings = await posting_service.get_postings_by_community_id(
         community.id, count_per_page, skip_count)
+
+    for i in range(len(community.page_postings)):
+        community.page_postings[i].comment_count = await comment_service.get_comment_count_by_posting_id(community.page_postings[i].id)
+    
     return community

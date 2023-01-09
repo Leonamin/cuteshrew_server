@@ -8,6 +8,7 @@ from app.posting import service
 from app.posting.exceptions import UnauthorizedException
 from app.community import dependency as community_dependency
 from app.user import dependency as user_dependency
+from app.comment import service as comment_service
 
 router = APIRouter(
     prefix="/posting",
@@ -20,8 +21,10 @@ async def get_detail_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
     load_count: int = Depends(valid_load_cound)
 ):
-    postings = await service.get_postings_by_community_id(community.id, load_count)
-    return postings
+    response: List[ResponsePostingDetail] = await service.get_postings_by_community_id(community.id, load_count)
+    for i in range(len(response)):
+        response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
+    return response
 
 
 @router.get("/previews", response_model=List[ResponsePostingPreview])
@@ -29,8 +32,10 @@ async def get_preview_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
     load_count: int = Depends(valid_load_cound)
 ):
-    postings = await service.get_postings_by_community_id(community.id, load_count)
-    return postings
+    response: List[ResponsePostingPreview] = await service.get_postings_by_community_id(community.id, load_count)
+    for i in range(len(response)):
+        response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
+    return response
 
 
 @router.get("/{posting_id}", response_model=ResponsePostingDetail)
@@ -38,6 +43,8 @@ async def get_posting(
     community: Mapping = Depends(community_dependency.valid_community_name),
     posting: Mapping = Depends(verify_posting)
 ):
+    response: ResponsePostingDetail = posting
+    response.comment_comunt = await comment_service.get_comment_count_by_posting_id(response.id)
     return posting
 
 
