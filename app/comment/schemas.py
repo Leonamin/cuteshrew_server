@@ -1,8 +1,26 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.user import schemas as user_schemas
 from app.posting import schemas as posting_schemas
+
+
+class ReqeustCommentCreate(BaseModel):
+    comment: str = Field(min_length=1)
+    group_id: Optional[int] = None
+    comment_class: Optional[int] = None
+
+    class Config():
+        schema_extra = {
+            'example': {
+                'comment': 'Blessed are those who mourn for they will be conforted',
+            },
+            'example_reply': {
+                'comment': 'Blessed are those who mourn for they will be conforted',
+                'group_id': 5,
+                'comment_class': 4
+            }
+        }
 
 
 class ResponseCommentBaseModel(BaseModel):
@@ -96,8 +114,8 @@ class ResponseCommentDetail(ResponseCommentBaseModel):
                 "user_id": 1,
                 "created_at": 1672791019,
                 "post_id": 12,
-                "comment_class": 2,
-                "order": 1,
+                "comment_class": 5,
+                "order": 5,
                 "group_id": 13,
                 # "creator": user_schemas.ResponseUserPreview.Config.schema_extra,
                 # "posting": posting_schemas.ResponsePostingPreview.Config.schema_extra

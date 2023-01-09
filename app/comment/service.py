@@ -67,6 +67,7 @@ async def create_comment(
         # 한 댓글 그룹의 대표니까 group_id는 댓글의 id로 설정
         comment.update({'group_id': new_comment.id})
         db.commit()
+        db.refresh(new_comment)
         return new_comment
     except HTTPException as e:
         raise e

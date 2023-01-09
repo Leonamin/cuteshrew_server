@@ -2,8 +2,11 @@ from typing import List, Mapping
 from fastapi import APIRouter
 from fastapi import APIRouter, Depends, status
 
-from app.comment.schemas import ResponseCommentDetail
+from app.comment import service
+from app.comment.schemas import ReqeustCommentCreate, ResponseCommentDetail
 from app.comment.dependency import valid_comment_id, valid_comment_posting_id
+from app.posting import dependency as posting_dependency
+from app.user import dependency as user_dependency
 
 router = APIRouter(
     # prefix="/community/{community_name}/{post_id}/comment",
@@ -26,12 +29,18 @@ async def get_comments(
     return comments
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
-def create_comment(community_name: str, post_id: int):
-    pass
+@router.post("/create/{posting_id}", status_code=status.HTTP_201_CREATED)
+async def create_comment(
+    new_comment: ReqeustCommentCreate,
+    posting: Mapping = Depends(posting_dependency.valid_posting_id),
+    user: Mapping = Depends(user_dependency.get_current_user_info)
+):
+    comment = await service.create_comment(
+        posting.id, user.id, new_comment.comment)
+    return comment
 
 
-@router.post("/{group_id}", status_code=status.HTTP_201_CREATED)
+@router.post("/reply/create/{group_id}", status_code=status.HTTP_201_CREATED)
 def create_reply(community_name: str, post_id: int, group_id: int):
     pass
 
