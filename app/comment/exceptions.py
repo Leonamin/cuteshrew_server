@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 
 def CommentNotFound():
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                         detail="Posting not found")
+                         detail="Comment not found")
 
 
 def UnauthorizedException():
