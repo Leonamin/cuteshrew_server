@@ -32,7 +32,7 @@ async def signin(
         data={"user_nickname": user.nickname}, 
         expires_delta=expires_delta, 
         secret_key=secret_key)
-    expire_time = round(int(time.time()))
+    expire_time = round(time.mktime(expire_time.timetuple()))
     
     return {"access_token": access_token, "token_type": "bearer", "expire_time": expire_time}
 
