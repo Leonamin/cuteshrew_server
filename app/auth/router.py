@@ -10,6 +10,7 @@ from app.auth.schemas import AuthToken
 from app.auth.utils import Hash
 from app.dependency import get_secret_key
 from app.user import service as user_service
+from app.user.exceptions import UserNotFoundException
 from .exceptions import IncorrectPassword
 
 router = APIRouter(
@@ -24,6 +25,8 @@ async def signin(
     secret_key: str = Depends(get_secret_key)
 ):
     user = await user_service.get_user_by_user_name(request.username)
+    if not user:
+        raise UserNotFoundException()
     if not Hash.verify(user.password, request.password):
         raise IncorrectPassword()
         
