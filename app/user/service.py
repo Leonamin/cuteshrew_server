@@ -1,6 +1,11 @@
-from fastapi import Depends
+import time
+from fastapi import Depends, HTTPException
+from sqlalchemy import exc
 from sqlalchemy.orm import Session
 from app import database
+from app.auth.utils import Hash
+from app.dependency import Authority
+from app.exceptions import DatabaseError, HashTypeError, HashValueError, UnknownError
 from app.user.exceptions import UserNotFoundException
 
 # FIXME User 옮겨야함
@@ -26,3 +31,32 @@ async def get_user_by_user_email(
     db: Session = next(database.get_db())
     user = db.query(User).filter(User.email == user_email).first()
     return user
+
+async def create_user(
+    user_name: str,
+    user_email: str,
+    user_password: str,
+):
+    try:
+        db: Session = next(database.get_db())
+        new_user: User = User(
+            nickname=user_name,
+            email=user_email,
+            password=Hash.bcrypt(user_password),
+            authority=Authority.WRITER,
+            created_at=int(time.time())
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except HTTPException as e:
+        raise e
+    except ValueError as e:
+        raise HashValueError()
+    except TypeError as e:
+        raise HashTypeError()
+    except exc.SQLAlchemyError as e:
+        raise DatabaseError(detail='sqlalchemy error')
+    except Exception as e:
+        raise UnknownError(detail=e.__class__.__name__)

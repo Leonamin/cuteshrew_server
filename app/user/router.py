@@ -6,6 +6,7 @@ from app.user.schemas import RequestUserCreate, ResponseUserDetail
 from app.user.exceptions import UserNotFoundException
 from app.posting import service as posting_service
 from app.comment import service as comment_service
+from app.user import service
 
 
 router = APIRouter(
@@ -15,9 +16,11 @@ router = APIRouter(
 
 
 @router.post('/general', status_code=status.HTTP_201_CREATED)
-def create_user(user: RequestUserCreate = Depends()):
+async def create_user(user: RequestUserCreate):
     print(user.password.get_secret_value())
-    return {"asdasd"}
+    await service.create_user(
+        user.nickname, user.email, user.password.get_secret_value(),)
+    return "user created"
 
 
 @router.post('/admin')

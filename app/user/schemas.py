@@ -1,11 +1,11 @@
 from typing import Optional
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, Field, SecretStr
 
 
 class RequestUserCreate(BaseModel):
-    nickname: str
-    email: str
-    password: SecretStr
+    nickname: str = Field(min_length=1, max_length=20)
+    email: str = Field(min_length=1, max_length=100)
+    password: SecretStr = Field(min_length=1, max_length=20)
 
     class Config:
         schema_extra = {
