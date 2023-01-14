@@ -2,7 +2,7 @@ from typing import List, Mapping, Optional
 from fastapi import APIRouter, Depends, status
 
 from app.community import dependency as community_dependency
-from app.posting.dependency import can_user_modify_posting, valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting, valid_load_cound
+from app.posting.dependency import can_user_modify_posting, valid_page_num, valid_posting_id, verify_posting, can_user_write_posting, can_user_delete_posting, valid_load_cound
 from app.posting.schemas import ResponsePostingDetail, RequestPostingCreate, ResponsePostingPreview, PostingSchemasBaseModel
 from app.posting import service
 from app.posting.exceptions import UnauthorizedException
@@ -19,9 +19,11 @@ router = APIRouter(
 @router.get("/details", response_model=List[ResponsePostingDetail])
 async def get_detail_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
-    load_count: int = Depends(valid_load_cound)
+    load_count: int = Depends(valid_load_cound),
+    page_num: int = Depends(valid_page_num)
 ):
-    response: List[ResponsePostingDetail] = await service.get_postings_by_community_id(community.id, load_count)
+    skip_count = (page_num - 1) * load_count
+    response: List[ResponsePostingDetail] = await service.get_postings_by_community_id(community.id, load_count, skip_count)
     for i in range(len(response)):
         response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
     return response
@@ -30,9 +32,11 @@ async def get_detail_postings(
 @router.get("/previews", response_model=List[ResponsePostingPreview])
 async def get_preview_postings(
     community: Mapping = Depends(community_dependency.valid_community_name),
-    load_count: int = Depends(valid_load_cound)
+    load_count: int = Depends(valid_load_cound),
+    page_num: int = Depends(valid_page_num)
 ):
-    response: List[ResponsePostingPreview] = await service.get_postings_by_community_id(community.id, load_count)
+    skip_count = (page_num - 1) * load_count
+    response: List[ResponsePostingPreview] = await service.get_postings_by_community_id(community.id, load_count, skip_count)
     for i in range(len(response)):
         response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
     return response

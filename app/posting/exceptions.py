@@ -24,3 +24,8 @@ def NeedPasswordException():
 def InvalidPasswordException():
     return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                          detail="Invalid password")
+
+
+def InvalidPageNum():
+    return HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+                         detail="Invalid page num")

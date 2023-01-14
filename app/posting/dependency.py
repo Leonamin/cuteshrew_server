@@ -8,7 +8,7 @@ from app.exceptions import HashTypeError, HashValueError, UnknownError
 from app.posting import service
 from app.posting.constants import MAX_POSTING_LOAD_COUNT
 from app.posting.schemas import RequestPostingCreate
-from app.posting.exceptions import InvalidLoadCountException, PostingNotFound, NeedPasswordException, InvalidPasswordException, UnauthorizedException
+from app.posting.exceptions import InvalidLoadCountException, InvalidPageNum, PostingNotFound, NeedPasswordException, InvalidPasswordException, UnauthorizedException
 from app.community import dependency as community_dependency
 from app.user import dependency as user_dependency
 
@@ -89,3 +89,11 @@ def valid_load_cound(load_count: Optional[int] = None) -> int:
     if (load_count > MAX_POSTING_LOAD_COUNT or load_count <= 0):
         raise InvalidLoadCountException()
     return load_count
+
+# 페이지 확인
+def valid_page_num(page_num: int = None) -> int:
+    if page_num == None:
+        page_num = 1
+    if (page_num <= 0):
+        raise InvalidPageNum()
+    return page_num
