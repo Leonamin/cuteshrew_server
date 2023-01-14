@@ -21,7 +21,7 @@ async def search_postings_by_user_name(
 ):
     response: List[ResponseSearchPostingPreview] = postings
     for i in range(len(response)):
-        response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
+        response[i].comment_count = await comment_service.get_comment_count_by_posting_id(response[i].id)
     return postings
 
 

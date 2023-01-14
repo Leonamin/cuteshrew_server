@@ -51,7 +51,7 @@ class PostingSchemasBaseModel(BaseModel):
         }
 
 class ResponsePostingPreview(PostingSchemasBaseModel):
-    comment_comunt: Optional[int]
+    comment_count: Optional[int]
     creator: Optional[user_schemas.ResponseUserPreview]
     own_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]
 
@@ -70,7 +70,7 @@ class ResponsePostingPreview(PostingSchemasBaseModel):
 
 class ResponsePostingDetail(PostingSchemasBaseModel):
     body: str = Field(min_length=1)
-    comment_comunt: Optional[int]
+    comment_count: Optional[int]
     creator: Optional[user_schemas.ResponseUserPreview]
     # belongs_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]
     own_community: Optional[community_schemas.ResponseCommunitySchemasBaseModel]

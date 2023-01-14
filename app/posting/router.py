@@ -25,7 +25,7 @@ async def get_detail_postings(
     skip_count = (page_num - 1) * load_count
     response: List[ResponsePostingDetail] = await service.get_postings_by_community_id(community.id, load_count, skip_count)
     for i in range(len(response)):
-        response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
+        response[i].comment_count = await comment_service.get_comment_count_by_posting_id(response[i].id)
     return response
 
 
@@ -38,7 +38,7 @@ async def get_preview_postings(
     skip_count = (page_num - 1) * load_count
     response: List[ResponsePostingPreview] = await service.get_postings_by_community_id(community.id, load_count, skip_count)
     for i in range(len(response)):
-        response[i].comment_comunt = await comment_service.get_comment_count_by_posting_id(response[i].id)
+        response[i].comment_count = await comment_service.get_comment_count_by_posting_id(response[i].id)
     return response
 
 
@@ -48,7 +48,7 @@ async def get_posting(
     posting: Mapping = Depends(verify_posting)
 ):
     response: ResponsePostingDetail = posting
-    response.comment_comunt = await comment_service.get_comment_count_by_posting_id(response.id)
+    response.comment_count = await comment_service.get_comment_count_by_posting_id(response.id)
     return posting
 
 
