@@ -21,7 +21,8 @@ def join_session(
             "tpc": session_name,
             "version": 1,
             "role_type": 0,
-            "pwd": 12345
+            "pwd": 12345,
+            "geo_regions": "JP"
         },
         expires_delta=timedelta(seconds=2000),
         secret_key=secret_key,
