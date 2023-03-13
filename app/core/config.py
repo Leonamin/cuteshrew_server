@@ -4,15 +4,15 @@ from typing import List, Union
 from pydantic import AnyHttpUrl, BaseSettings, Field, validator
 
 
-
 class Settings(BaseSettings):
     PROJECT_NAME: str
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     VERSION: str
     ENVIRONMENT: str
-    SHOW_DOCS_ENVIRONMENT = ("local", "staging")  #  docs가 보일 환경은 명시적으로 정할것
-    SECRET_KEY: str = Field(default= None)
-    ZOOM_SDK_KEY: str = Field(default= None)
+    SHOW_DOCS_ENVIRONMENT = ("local", "staging")  # docs가 보일 환경은 명시적으로 정할것
+    SECRET_KEY: str = Field(default=None)
+    ZOOM_SDK_KEY: str = Field(default=None)
+    ZOOM_VIDEO_SDK_SECRET: str = Field(default=None)
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -22,12 +22,11 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    
-
     class Config:
         case_sensitive = True
         env_file = ".env"
         env_file_encoding = 'utf-8'
+
 
 # python ~~~ 실행 위치에 따라 .env 실행하는게 달라진다.
 # python 명령어를 실행 혹은 uvicorn을 실행할 때 실행하는 디렉토리 내에 .env 파일을 읽는 것이다.
