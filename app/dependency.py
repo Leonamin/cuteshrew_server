@@ -30,3 +30,6 @@ def get_settings():
 #@lru_cache()를 중복하면 동작이 안되는 것 같다.
 def get_secret_key(settings: config.Settings = Depends(get_settings)) -> Mapping:
     return settings.SECRET_KEY
+
+def get_zoom_sdk_key(settings: config.Settings = Depends(get_settings)) -> Mapping:
+    return settings.ZOOM_SDK_KEY

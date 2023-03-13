@@ -53,5 +53,5 @@ app = get_application()
 async def index():
     return FileResponse('web/index.html', media_type='text/html')
 
-app.mount("/", StaticFiles(directory="web"), name="web")
+# app.mount("/", StaticFiles(directory="web"), name="web")
 
