@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str = Field(default=None)
     ZOOM_SDK_KEY: str = Field(default=None)
     ZOOM_VIDEO_SDK_SECRET: str = Field(default=None)
+    AGORA_APP_ID: str = Field(default=None)
+    AGORA_CERTIFICATE: str = Field(default=None)
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

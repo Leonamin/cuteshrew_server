@@ -43,3 +43,11 @@ def get_zoom_sdk_key(settings: config.Settings = Depends(get_settings)) -> Mappi
 
 def get_zoom_sdk_secret(settings: config.Settings = Depends(get_settings)) -> Mapping:
     return settings.ZOOM_VIDEO_SDK_SECRET
+
+
+def get_agora_app_id(settings: config.Settings = Depends(get_settings)) -> Mapping:
+    return settings.AGORA_APP_ID
+
+
+def get_agora_certificate(settings: config.Settings = Depends(get_settings)) -> Mapping:
+    return settings.AGORA_CERTIFICATE

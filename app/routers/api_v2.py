@@ -8,6 +8,7 @@ from app.posting.router import router as PostingRouter
 from app.search.router import router as SearchRouter
 from app.page.router import router as PageRouter
 from app.zoom.router import router as ZoomRouter
+from app.agora.router import router as AgoraRouter
 
 router = APIRouter(
     prefix="/apiv2",
@@ -21,3 +22,4 @@ router.include_router(PostingRouter)
 router.include_router(SearchRouter)
 router.include_router(PageRouter)
 router.include_router(ZoomRouter)
+router.include_router(AgoraRouter)
