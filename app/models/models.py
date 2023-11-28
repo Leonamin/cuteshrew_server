@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship, column_property
 from app.dependency import Authority
 from ..database import Base
 
-
+'''
 class Posting(Base):
     __tablename__ = "postings"
     id = Column(Integer, primary_key=True, index=True)
@@ -19,7 +19,8 @@ class Posting(Base):
 
     # 뭐지 이거? 장난하는건가? 아래 대로 lazy를 붙이니까 된다.
     # https://stackoverflow.com/questions/13967093/parent-instance-is-not-bound-to-a-session-lazy-load-operation-of-attribute-acc
-    own_community = relationship("Community", back_populates="postings", lazy='subquery')
+    own_community = relationship(
+        "Community", back_populates="postings", lazy='subquery')
     creator = relationship("User", back_populates="postings", lazy='subquery')
     comments = relationship("Comment", back_populates="posting")
 
@@ -41,6 +42,8 @@ class User(Base):
     comments = relationship("Comment", back_populates="creator")
 
 # FIXME IMPORTANT!!!!!!! name이 겹치면 안된다!
+
+
 class Community(Base):
     __tablename__ = "communities"
     id = Column(Integer, primary_key=True, index=True)
@@ -52,8 +55,6 @@ class Community(Base):
     published_at = Column(BigInteger)
 
     postings = relationship("Posting", back_populates="own_community")
-    postings_count = column_property(
-        select([func.count(Posting.id)]).filter(Posting.community_id == id).scalar_subquery())
 
 
 class Comment(Base):
@@ -76,3 +77,4 @@ class Comment(Base):
 
     creator = relationship("User", back_populates="comments")
     posting = relationship("Posting", back_populates="comments")
+'''
