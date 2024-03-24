@@ -12,10 +12,10 @@ from starlette.responses import FileResponse
 
 
 def get_application():
-    app_configs = {"title" : settings.PROJECT_NAME, "version" : settings.VERSION}
-    
+    app_configs = {"title": settings.PROJECT_NAME, "version": settings.VERSION}
+
     if settings.ENVIRONMENT not in settings.SHOW_DOCS_ENVIRONMENT:
-        app_configs["openapi_url"] = None  
+        app_configs["openapi_url"] = None
 
     _app = FastAPI(**app_configs)
 
@@ -35,7 +35,7 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # _app.dependency_overrides[function_name] = override_function_name
     _app.include_router(api_v2.router)
 
@@ -43,15 +43,3 @@ def get_application():
 
 
 app = get_application()
-
-# @app.get("/info")
-# def info(settings: config.Settings = Depends(get_settings)):
-#     return settings
-
-# 얘보다 뒤에 있으면 모든 /로 시작하는 응답이 안먹힌다.
-@app.get("/")
-async def index():
-    return FileResponse('web/index.html', media_type='text/html')
-
-app.mount("/", StaticFiles(directory="web"), name="web")
-
