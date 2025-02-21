@@ -53,7 +53,7 @@ class Community(Base):
 
     postings = relationship("Posting", back_populates="own_community")
     postings_count = column_property(
-        select([func.count(Posting.id)]).filter(Posting.community_id == id).scalar_subquery())
+        select(func.count(Posting.id)).filter(Posting.community_id == id).scalar_subquery())
 
 
 class Comment(Base):

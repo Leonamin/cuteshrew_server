@@ -1,7 +1,8 @@
 
 from typing import List, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, Field, validator
+from pydantic import AnyHttpUrl, Field, validator
+from pydantic_settings import BaseSettings
 
 
 
@@ -10,7 +11,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     VERSION: str
     ENVIRONMENT: str
-    SHOW_DOCS_ENVIRONMENT = ("local", "staging")  #  docs가 보일 환경은 명시적으로 정할것
+    SHOW_DOCS_ENVIRONMENT: str = ("local", "staging")  #  docs가 보일 환경은 명시적으로 정할것
     SECRET_KEY: str = Field(default= None)
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
