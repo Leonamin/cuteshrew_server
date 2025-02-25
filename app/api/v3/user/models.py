@@ -1,5 +1,5 @@
 from sqlalchemy import BigInteger, Column, Enum, Integer, String
-from app.database import Base
+from app.db.database import Base
 from app.dependency import Authority
 from sqlalchemy.orm import relationship
 

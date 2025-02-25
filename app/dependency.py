@@ -5,19 +5,6 @@ from typing import Mapping
 from fastapi import Depends
 from app.core import config
 
-class Authority(Enum):
-    # READER = 'READER'
-    # WRITER = 'WRITER'
-    # SUB_ADMIN = 'SUB_ADMIN'
-    # ADMIN = 'ADMIN'
-    # GOD = 'GOD'
-    GOD = 9
-    ADMIN = 4
-    SUB_ADMIN = 3
-    WRITER = 2
-
-    READER = 1
-
 # @Iru_cache 데코레이터가 위에 있으면 Settings 객체는 처음 호출될 때 한번만 생성될 것이다.
 # 대충 원리가 어떻게 되냐면 실행한 함수 -> get_settings()가 되야겠지만 아래 print("test!")는 1번만 실행된다.
 # 왜냐면 줘야하는 리턴값은 항상 똑같으므로 리턴값을 저장해서 실행한 함수 -> 저장한 리턴값 -> 리턴값 반환 이렇게 된다.

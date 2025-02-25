@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, Query, exc
 
-from app import database
+from app.db import database
 from app.exceptions import DatabaseError, UnknownError
 from app.models.models import Comment
 from app.comment.exceptions import CommentNotFound

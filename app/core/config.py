@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str
     SHOW_DOCS_ENVIRONMENT: str = ("local", "staging")  #  docs가 보일 환경은 명시적으로 정할것
     SECRET_KEY: str = Field(default= None)
+    DATABASE_PATH: str
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

@@ -2,7 +2,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Session, exc
 from fastapi import HTTPException
 
-from app import database
+from app.db import database
 from app.exceptions import DatabaseError, UnknownError
 from app.models.models import Posting, Comment
 

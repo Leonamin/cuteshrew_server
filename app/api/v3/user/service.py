@@ -2,7 +2,7 @@ import time
 from fastapi import Depends, HTTPException
 from sqlalchemy import exc
 from sqlalchemy.orm import Session
-from app import database
+from app.db import database
 from app.auth.utils import Hash
 from app.dependency import Authority
 from app.exceptions import DatabaseError, HashTypeError, HashValueError, UnknownError

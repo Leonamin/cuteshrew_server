@@ -1,6 +1,6 @@
 import time
 from sqlalchemy.orm import Session, Query
-from app import database
+from app.db import database
 from app.dependency import Authority
 from sqlalchemy import exc
 

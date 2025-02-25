@@ -3,7 +3,7 @@ import time
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app import database
+from app.db import database
 from app.auth.constants import ACCESS_TOKEN_EXPIRE_WEEKS
 from app.auth.dependencies import create_access_token, parse_jwt_data, valid_token
 from app.auth.schemas import AuthToken
