@@ -1,5 +1,5 @@
 from sqlalchemy import Engine
-from app.db.models import comment, community, post, user
+from app.data.models import comment, community, post, user
 
 def create_db_metadata(engine: Engine):
     community.Base.metadata.create_all(bind=engine)
