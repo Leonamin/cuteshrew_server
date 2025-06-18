@@ -10,4 +10,4 @@ class PostView(Base):
     post_id = Column(Integer, ForeignKey("posts.id"), comment="게시글 ID")
     user_id = Column(Integer, ForeignKey("users.id"), comment="유저 ID")
     created_at = Column(DateTime, nullable=False,
-                        default=datetime.now, comment="생성일시")
+                        default=datetime.datetime.now, comment="생성일시")

@@ -9,4 +9,4 @@ class PostLike(Base):
   id = Column(Integer, primary_key=True, index=True, comment="게시글 좋아요 ID")
   post_id = Column(Integer, ForeignKey("posts.id"), comment="게시글 ID")
   user_id = Column(Integer, ForeignKey("users.id"), comment="유저 ID")
-  created_at = Column(DateTime, nullable=False, default=datetime.now, comment="생성일시")
+  created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, comment="생성일시")

@@ -10,6 +10,6 @@ class User(Base):
   name = Column(String, nullable=False)
   email = Column(String, nullable=False, unique=True)
   password = Column(String, nullable=False)
-  created_at = Column(DateTime, nullable=False, default=datetime.now)
-  updated_at = Column(DateTime, nullable=False, default=datetime.now)
+  created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+  updated_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
   deleted_at = Column(DateTime, nullable=True)
