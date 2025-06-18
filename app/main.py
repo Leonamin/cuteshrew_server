@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import create_tables
-from app.routers import user
+from app.routers import auth, user
 
 
 def create_app() -> FastAPI:
@@ -37,6 +37,7 @@ def create_app() -> FastAPI:
     # 라우터 등록
     # TODO: 라우터 파일들이 생성되면 여기에 추가
     # from app.routers import user, post
+    app.include_router(auth.router, tags=["auth"])
     app.include_router(user.router, tags=["users"])
     # app.include_router(post.router, prefix="/api/v1/posts", tags=["posts"])
 
