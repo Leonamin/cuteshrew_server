@@ -2,18 +2,26 @@
 
 ## 환경 설정
 project 폴더 아래에 .env를 생성하고 config.py에서 필요한 필드를 작성한다 (ex - PROJECT_NAME, VERSION)
-- ENVIRONMENT: local로 적지 않으면 openapi_url = None로 하기 때문에 /docs, /redoc은 안보이게 될 것이다.
+- SHOW_DOCS: false로 하면 API 스웨거 문서를 숨긴다
 
 
 ### .env
 ```
 PROJECT_NAME=cuteshrew
-VERSION=1
+VERSION=0.1.0
 ENVIRONMENT=local
-SHOW_DOCS_ENVIRONMENT=local
-SECRET_KEY= openssl rand -hex 32 명령어의 결과물
-DATEBASE_PATH=sqlite:///var/db/cuteshrew.db
+SHOW_DOCS=True
+SECRET_KEY=asdaj543lkj12iu2982739179hjkadshlk
+DATABASE_URL=sqlite:///./db.sqlite3
 ```
+
+- PROJECT_NAME: 프로젝트 이름 [project name]
+- VERSION: 버전 코드 [1.0.0]
+- ENVIRONMENT: 환경 설정 [local]
+- SHOW_DOCS: [True | False]
+- SECRET_KEY= openssl rand -hex 32 결과물
+- DATABASE_URL= DB URL
+
 
 ## 실행
 ### 테스트

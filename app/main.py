@@ -1,40 +1,62 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
-from app.db.initialize import create_db_metadata
-from app.db.database import engine
+from app.config import settings
+from app.database import create_tables
 
 
-def get_application():
-    app_configs = {"title": settings.PROJECT_NAME, "version": settings.VERSION}
+def create_app() -> FastAPI:
+    """FastAPI 앱 생성"""
+    # 앱 설정
+    app_configs = {
+        "title": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+    }
 
-    if settings.ENVIRONMENT not in settings.SHOW_DOCS_ENVIRONMENT:
+    # API 문서 표시 여부 설정
+    if not settings.SHOW_DOCS:
         app_configs["openapi_url"] = None
+        app_configs["docs_url"] = None
+        app_configs["redoc_url"] = None
 
-    _app = FastAPI(**app_configs)
+    app = FastAPI(**app_configs)
 
-    create_db_metadata(engine)
-
-    _app.add_middleware(
-        # FIXME allow origins 때문에 flutter에서 수신이 안됨 왜그러는지?
-        # CORSMiddleware,
-        # allow_origins=[str(origin)
-        #                for origin in settings.BACKEND_CORS_ORIGINS],
-        # allow_credentials=True,
-        # allow_methods=["*"],
-        # allow_headers=["*"],
+    # CORS 미들웨어 설정
+    app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["*"],  # 개발용 - 프로덕션에서는 특정 도메인만 허용
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    # _app.dependency_overrides[function_name] = override_function_name
-    # _app.include_router(api_v2.router)
+    # 데이터베이스 테이블 생성
+    create_tables()
 
-    return _app
+    # 라우터 등록
+    # TODO: 라우터 파일들이 생성되면 여기에 추가
+    # from app.routers import user, post
+    # app.include_router(user.router, prefix="/api/v1/users", tags=["users"])
+    # app.include_router(post.router, prefix="/api/v1/posts", tags=["posts"])
+
+    return app
 
 
-app = get_application()
+# 앱 인스턴스 생성
+app = create_app()
+
+
+@app.get("/")
+async def root():
+    """루트 엔드포인트"""
+    return {
+        "message": "Welcome to CuteShrew Server",
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """헬스 체크 엔드포인트"""
+    return {"status": "healthy"}
