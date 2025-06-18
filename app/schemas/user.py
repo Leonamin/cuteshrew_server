@@ -24,6 +24,11 @@ class UserLoginReq(BaseModel):
                           max_length=100, description="비밀번호")
 
 
+class UserLoginRes(BaseModel):
+    access_token: str = Field(..., description="액세스 토큰")
+    refresh_token: str = Field(..., description="리프레시 토큰")
+
+
 class UserReadRes(BaseModel):
     id: int = Field(..., description="유저 ID")
     email: str = Field(..., min_length=5, max_length=255, description="이메일",

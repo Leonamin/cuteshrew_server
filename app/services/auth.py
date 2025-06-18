@@ -2,11 +2,12 @@ from passlib.context import CryptContext
 
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import DuplicateEmailException
+from app.core.exceptions import DuplicateEmailException, InvalidCredentialsException
 from app.models.user import User
 from app.models.user_profile import UserProfile
-from app.schemas.user import UserCreateReq, UserCreateRes
+from app.schemas.user import UserCreateReq, UserCreateRes, UserLoginReq, UserLoginRes
 from app.config import settings
+from app.services.jwt_utils import create_access_token, create_refresh_token
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -61,3 +62,23 @@ def create_user(user: UserCreateReq, db: Session) -> UserCreateRes:
     except Exception as e:
         db.rollback()
         raise e
+
+
+def login_user(user: UserLoginReq, db: Session) -> UserLoginRes:
+    '''유저 로그인'''
+    # 유저 조회
+    db_user = db.query(User).filter(User.email == user.email).first()
+    if not db_user:
+        raise InvalidCredentialsException()
+
+    # 비밀번호 검증
+    if not verify_password(user.password, db_user.password):
+        raise InvalidCredentialsException()
+
+    # 토큰 생성
+    access_token = create_access_token(
+        {"user_id": db_user.id, "email": db_user.email, "name": db_user.name})
+    refresh_token = create_refresh_token(
+        {"user_id": db_user.id, "email": db_user.email, "name": db_user.name})
+
+    return UserLoginRes(access_token=access_token, refresh_token=refresh_token)
