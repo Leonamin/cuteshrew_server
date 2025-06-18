@@ -1,6 +1,7 @@
+from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from app.config import settings
 
 # SQLite 데이터베이스 URL (개발용)
@@ -8,7 +9,7 @@ SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 # SQLite용 엔진 생성
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
+    SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False}
 )
 
@@ -19,7 +20,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     """데이터베이스 세션 의존성"""
     db = SessionLocal()
     try:

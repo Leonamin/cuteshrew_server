@@ -8,7 +8,6 @@ class UserProfile(Base):
 
   id = Column(Integer, primary_key=True, index=True, comment="유저 프로필 ID")
   user_id = Column(Integer, ForeignKey("users.id"), comment="유저 ID")
-  nickname = Column(String, nullable=False, comment="유저 닉네임")
   thumbnail_url = Column(String, nullable=True, comment="유저 프로필 썸네일 이미지 URL")
   description = Column(String, nullable=True, comment="유저 프로필 설명 Markdown")
   created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, comment="생성일시")
