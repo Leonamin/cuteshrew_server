@@ -23,7 +23,7 @@ class PostUpdateReq(BaseModel):
 
 
 class PostUpdateRes(BaseModel):
-    id: int = Field(..., description="게시글 ID")
+    id: str = Field(..., description="게시글 ID")
 
 
 class PostSummaryRes(BaseModel):
