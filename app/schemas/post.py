@@ -3,6 +3,10 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
+class PostDraftRes(BaseModel):
+    id: str = Field(..., description="게시글 UUID")
+
+
 class PostCreateReq(BaseModel):
     title: str = Field(..., min_length=1, max_length=255, description="제목")
     content: str = Field(..., min_length=1, description="내용")
@@ -14,8 +18,7 @@ class PostCreateRes(BaseModel):
 
 
 class PostUpdateReq(BaseModel):
-    title: Optional[str] = Field(
-        None, min_length=1, max_length=255, description="제목")
+    title: Optional[str] = Field(None, min_length=1, max_length=255, description="제목")
     content: Optional[str] = Field(None, min_length=1, description="내용")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
 
@@ -36,7 +39,8 @@ class PostSummaryRes(BaseModel):
     writer_id: int = Field(..., description="작성자 ID")
     writer_name: str = Field(..., description="작성자 이름")
     writer_thumbnail_url: Optional[str] = Field(
-        None, description="작성자 썸네일 이미지 URL")
+        None, description="작성자 썸네일 이미지 URL"
+    )
 
 
 class PostDetailRes(BaseModel):
@@ -51,7 +55,8 @@ class PostDetailRes(BaseModel):
     writer_id: int = Field(..., description="작성자 ID")
     writer_name: str = Field(..., description="작성자 이름")
     writer_thumbnail_url: Optional[str] = Field(
-        None, description="작성자 썸네일 이미지 URL")
+        None, description="작성자 썸네일 이미지 URL"
+    )
 
 
 class PostLikeReq(BaseModel):

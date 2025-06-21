@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import create_tables
-from app.routers import auth, user
+from app.routers import auth, post, user
 
 
 def create_app() -> FastAPI:
@@ -39,7 +39,7 @@ def create_app() -> FastAPI:
     # from app.routers import user, post
     app.include_router(auth.router, tags=["auth"])
     app.include_router(user.router, tags=["users"])
-    # app.include_router(post.router, prefix="/api/v1/posts", tags=["posts"])
+    app.include_router(post.router, tags=["posts"])
 
     return app
 

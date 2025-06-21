@@ -5,7 +5,16 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
-from app.schemas.post import PostCreateReq, PostCreateRes, PostDetailRes, PostSummaryRes, PostUpdateReq, PostUpdateRes
+from app.schemas.post import (
+    PostCreateReq,
+    PostCreateRes,
+    PostDetailRes,
+    PostDraftRes,
+    PostSummaryRes,
+    PostUpdateReq,
+    PostUpdateRes,
+)
+from app.services.post import create_draft
 
 
 router = APIRouter(
@@ -14,11 +23,19 @@ router = APIRouter(
 )
 
 
+@router.get("/draft", response_model=PostDraftRes)
+def get_draft_id(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return create_draft(db, current_user.id)
+
+
 @router.post("/", response_model=PostCreateRes)
 def create_post(
     post: PostCreateReq,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     pass
 
@@ -36,7 +53,8 @@ def get_recent_posts(
     db: Session = Depends(get_db),
 ):
     pass
-  
+
+
 @router.get("/top", response_model=List[PostSummaryRes])
 def get_top_posts(
     db: Session = Depends(get_db),
@@ -49,6 +67,6 @@ def update_post(
     post_id: int,
     post: PostUpdateReq,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     pass
