@@ -18,3 +18,17 @@ def UserNotFoundException():
         status_code=status.HTTP_404_NOT_FOUND,
         detail="존재하지 않는 유저입니다.",
     )
+
+
+def PostNotFoundException():
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="존재하지 않는 게시글입니다.",
+    )
+
+
+def PostNotAuthorizedException():
+    return HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="게시글 작성자가 아닙니다.",
+    )

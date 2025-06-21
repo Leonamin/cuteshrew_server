@@ -13,14 +13,13 @@ class PostCreateReq(BaseModel):
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
 
 
-class PostCreateRes(BaseModel):
-    id: int = Field(..., description="게시글 ID")
-
-
 class PostUpdateReq(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255, description="제목")
     content: Optional[str] = Field(None, min_length=1, description="내용")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
+    publish: Optional[bool] = Field(
+        False, description="게시 여부"
+    )
 
 
 class PostUpdateRes(BaseModel):
@@ -44,7 +43,7 @@ class PostSummaryRes(BaseModel):
 
 
 class PostDetailRes(BaseModel):
-    id: int = Field(..., description="게시글 ID")
+    id: str = Field(..., description="게시글 ID")
     title: str = Field(..., description="제목")
     content: str = Field(..., description="내용")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
@@ -60,8 +59,8 @@ class PostDetailRes(BaseModel):
 
 
 class PostLikeReq(BaseModel):
-    post_id: int = Field(..., description="게시글 ID")
+    post_id: str = Field(..., description="게시글 ID")
 
 
 class PostLikeRes(BaseModel):
-    id: int = Field(..., description="게시글 좋아요 ID")
+    id: str = Field(..., description="게시글 좋아요 ID")
