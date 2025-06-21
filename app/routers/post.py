@@ -12,7 +12,7 @@ from app.schemas.post import (
     PostUpdateReq,
     PostUpdateRes,
 )
-from app.services import post
+from app.services import post_service
 
 
 router = APIRouter(
@@ -26,7 +26,7 @@ def get_draft_id(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return post.create_draft(db, current_user.id)
+    return post_service.create_draft(db, current_user.id)
 
 
 @router.put("/{post_id}", response_model=PostUpdateRes)
@@ -44,7 +44,7 @@ def get_post(
     post_id: str,
     db: Session = Depends(get_db),
 ):
-    return post.get_post_detail(db, post_id)
+    return post_service.get_post_detail(db, post_id)
 
 
 @router.get("/recent", response_model=List[PostSummaryRes])
