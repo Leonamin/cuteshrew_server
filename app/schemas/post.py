@@ -27,7 +27,7 @@ class PostUpdateRes(BaseModel):
 
 
 class PostSummaryRes(BaseModel):
-    id: int = Field(..., description="게시글 ID")
+    id: str = Field(..., description="게시글 ID")
     title: str = Field(..., description="제목")
     short_content: str = Field(..., description="내용 요약")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
