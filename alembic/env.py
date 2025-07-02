@@ -19,6 +19,8 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.database import Base
+# 모든 모델을 import하여 alembic이 감지할 수 있도록 함
+from app.models import user, user_profile, post, post_view, post_like
 
 target_metadata = Base.metadata
 

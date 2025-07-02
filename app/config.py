@@ -17,7 +17,30 @@ class Settings(BaseSettings):
 
     # 데이터베이스 설정
     DATABASE_URL: str = "sqlite:///./cuteshrew.db"
-
+    
+    # MySQL 설정 (향후 사용)
+    MYSQL_HOST: str = "localhost"
+    MYSQL_PORT: int = 3306
+    MYSQL_USER: str = "cuteshrew"
+    MYSQL_PASSWORD: str = "password"
+    MYSQL_DATABASE: str = "cuteshrew"
+    
+    # 파일 저장소 설정
+    STORAGE_TYPE: str = "local"  # local, s3
+    STORAGE_BASE_PATH: str = "./uploads"
+    STORAGE_TEMP_PATH: str = "./temp"
+    STORAGE_POSTS_PATH: str = "./uploads/posts"
+    
+    # S3 설정 (향후 사용)
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+    S3_BUCKET_NAME: str = "cuteshrew-uploads"
+    S3_REGION: str = "ap-northeast-2"
+    
+    # 이미지 처리 설정
+    MAX_IMAGE_SIZE: int = 10 * 1024 * 1024  # 10MB
+    ALLOWED_IMAGE_TYPES: List[str] = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    
     # API 문서 표시 여부 (true/false)
     SHOW_DOCS: bool = True
 
@@ -28,6 +51,11 @@ class Settings(BaseSettings):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
             return v
+    
+    @property
+    def mysql_url(self) -> str:
+        """MySQL 연결 URL 생성"""
+        return f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
 
     class Config:
         case_sensitive = True
