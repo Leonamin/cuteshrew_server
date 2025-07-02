@@ -1,6 +1,7 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
+import json
 
 from app.core.exceptions import (
     PostNotAuthorizedException,
@@ -15,6 +16,15 @@ from app.schemas.post import (
     PostUpdateReq,
     PostUpdateRes,
 )
+from app.utils.content_parser import (
+    move_temp_images_to_storage,
+    cleanup_temp_images,
+    extract_embedded_images_from_content,
+)
+from app.config import settings
+from app.utils.logger import get_logger
+
+logger = get_logger("post_service")
 
 
 def create_draft(
@@ -41,18 +51,24 @@ def update_post(
 ) -> PostUpdateRes:
     repository = PostRepository(db)
 
+    logger.info(f"Updating post {post_id} by user {user_id}")
+
     # 사용자 존재 확인
     user = repository.find_user_by_id(user_id)
     if not user:
+        logger.error(f"User not found: {user_id}")
         raise UserNotFoundException()
 
     # 게시글 존재 확인
     db_post = repository.find_post_by_id(post_id)
     if not db_post:
+        logger.error(f"Post not found: {post_id}")
         raise PostNotFoundException()
 
     # 권한 확인
     if db_post.user_id != user_id:
+        logger.error(
+            f"Unauthorized access to post {post_id} by user {user_id}")
         raise PostNotAuthorizedException()
 
     # 업데이트할 데이터 준비
@@ -68,8 +84,47 @@ def update_post(
     if post.publish is not None:
         update_data["is_draft"] = not post.publish
 
+    logger.debug(f"Update data prepared: {list(update_data.keys())}")
+
+    # 이미지 처리 (게시글 발행이 아니더라도 이미지 처리)
+    logger.info(f"Processing images for published post {post_id}")
+
+    # 임시 이미지를 실제 저장소로 이동
+    updated_content, moved_files = move_temp_images_to_storage(
+        content=post.content,
+        content_type=post.content_type or db_post.content_type,
+        post_id=post_id,
+        temp_path=settings.STORAGE_TEMP_PATH,
+        storage_path=settings.STORAGE_POSTS_PATH
+    )
+
+    logger.info(f"Moved {len(moved_files)} images to storage")
+
+    # content 업데이트
+    update_data["content"] = updated_content
+
+    # 임베딩된 이미지 목록 업데이트
+    embedded_images = extract_embedded_images_from_content(
+        content=updated_content,
+        content_type=post.content_type or db_post.content_type
+    )
+    update_data["embedded_images"] = json.dumps(embedded_images)
+
+    logger.info(f"Found {len(embedded_images)} embedded images")
+
+    # 사용하지 않는 임시 이미지 정리
+    deleted_files = cleanup_temp_images(
+        content=updated_content,
+        content_type=post.content_type or db_post.content_type,
+        temp_path=settings.STORAGE_TEMP_PATH
+    )
+
+    logger.info(f"Cleaned up {len(deleted_files)} unused temp images")
+
     # 게시글 업데이트
     updated_post = repository.update_post(db_post, update_data)
+    logger.info(f"Successfully updated post {post_id}")
+
     return PostUpdateRes(id=str(updated_post.id))
 
 

@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from app.config import settings
 from app.database import create_tables
@@ -12,6 +14,8 @@ def create_app() -> FastAPI:
     app_configs = {
         "title": settings.PROJECT_NAME,
         "version": settings.VERSION,
+        "docs_url": "/docs" if settings.SHOW_DOCS else None,
+        "redoc_url": "/redoc" if settings.SHOW_DOCS else None,
     }
 
     # API 문서 표시 여부 설정
@@ -34,12 +38,21 @@ def create_app() -> FastAPI:
     # 데이터베이스 테이블 생성
     create_tables()
 
+    # 정적 파일 서빙 설정
+    # 업로드된 파일들을 서빙하기 위해 추가
+    os.makedirs("temp", exist_ok=True)
+    os.makedirs("uploads", exist_ok=True)
+
+    app.mount("/temp", StaticFiles(directory="temp"), name="temp")
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
     # 라우터 등록
     # TODO: 라우터 파일들이 생성되면 여기에 추가
     # from app.routers import user, post
     app.include_router(auth.router, tags=["auth"])
     app.include_router(user.router, tags=["users"])
     app.include_router(post.router, tags=["posts"])
+    app.include_router(post.list_router, tags=["posts"])
 
     return app
 

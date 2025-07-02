@@ -146,3 +146,7 @@ venv/
 web/
 
 *.db
+
+temp/
+uploads/
+logs/
