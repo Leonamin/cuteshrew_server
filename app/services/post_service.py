@@ -61,6 +61,8 @@ def update_post(
         update_data["title"] = post.title
     if post.content is not None:
         update_data["content"] = post.content
+    if post.content_type is not None:
+        update_data["content_type"] = post.content_type
     if post.thumbnail_url is not None:
         update_data["thumbnail_url"] = post.thumbnail_url
     if post.publish is not None:

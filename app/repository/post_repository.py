@@ -8,6 +8,7 @@ from app.models.post import Post
 from app.models.user import User
 from app.models.user_profile import UserProfile
 from app.models.post_view import PostViewCount, PostView
+from app.utils.content_parser import parse_content_to_plain_text
 
 
 class PostRepository:
@@ -89,7 +90,11 @@ class PostRepository:
             {
                 "id": str(post.id),
                 "title": post.title,
-                "short_content": post.content[:100] if post.content else "",
+                "short_content": parse_content_to_plain_text(
+                    post.content, 
+                    post.content_type or "markdown", 
+                    200
+                ),
                 "thumbnail_url": post.thumbnail_url,
                 "created_at": post.created_at,
                 "view_count": view_count,
@@ -135,7 +140,11 @@ class PostRepository:
             {
                 "id": str(post.id),
                 "title": post.title,
-                "short_content": post.content[:100] if post.content else "",
+                "short_content": parse_content_to_plain_text(
+                    post.content, 
+                    post.content_type or "markdown", 
+                    200
+                ),
                 "thumbnail_url": post.thumbnail_url,
                 "created_at": post.created_at,
                 "view_count": view_count,

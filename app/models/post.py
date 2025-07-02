@@ -13,6 +13,9 @@ class Post(Base):
     user_id = Column(Integer, ForeignKey("users.id"), comment="유저 ID")
     title = Column(String, nullable=False, comment="게시글 제목")
     content = Column(String, nullable=False, comment="게시글 내용 Markdown")
+    content_type = Column(
+        String, nullable=False, default="markdown", comment="내용 형식 (markdown, quill, plain)"
+    )
     thumbnail_url = Column(String, nullable=True, comment="게시글 썸네일 이미지 URL")
     is_draft = Column(
         Boolean, nullable=False, default=True, comment="게시글 임시 저장 여부"

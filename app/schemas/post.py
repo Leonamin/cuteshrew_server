@@ -10,12 +10,14 @@ class PostDraftRes(BaseModel):
 class PostCreateReq(BaseModel):
     title: str = Field(..., min_length=1, max_length=255, description="제목")
     content: str = Field(..., min_length=1, description="내용")
+    content_type: str = Field("markdown", description="내용 형식 (markdown, quill, plain)")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
 
 
 class PostUpdateReq(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255, description="제목")
     content: Optional[str] = Field(None, min_length=1, description="내용")
+    content_type: Optional[str] = Field(None, description="내용 형식 (markdown, quill, plain)")
     thumbnail_url: Optional[str] = Field(None, description="썸네일 이미지 URL")
     publish: Optional[bool] = Field(
         False, description="게시 여부"
