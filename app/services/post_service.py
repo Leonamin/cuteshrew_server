@@ -8,6 +8,7 @@ from app.core.exceptions import (
     PostNotFoundException,
     UserNotFoundException,
 )
+from app.models.post import Post
 from app.repository.post_repository import PostRepository
 from app.schemas.post import (
     PostDetailRes,
@@ -43,35 +44,30 @@ def create_draft(
     return PostDraftRes(id=str(new_draft.id))
 
 
-def update_post(
-    db: Session,
-    post_id: str,
-    post: PostUpdateReq,
-    user_id: int,
-) -> PostUpdateRes:
-    repository = PostRepository(db)
-
-    logger.info(f"Updating post {post_id} by user {user_id}")
-
-    # 사용자 존재 확인
+def _validate_post_update_authorization(
+    repository: PostRepository, user_id: int, post_id: str
+) -> Post:
+    """게시글 업데이트 권한을 확인하고 게시글 객체를 반환합니다."""
+    logger.debug(f"Validating authorization for user {user_id} on post {post_id}")
     user = repository.find_user_by_id(user_id)
     if not user:
         logger.error(f"User not found: {user_id}")
         raise UserNotFoundException()
 
-    # 게시글 존재 확인
     db_post = repository.find_post_by_id(post_id)
     if not db_post:
         logger.error(f"Post not found: {post_id}")
         raise PostNotFoundException()
 
-    # 권한 확인
     if db_post.user_id != user_id:
-        logger.error(
-            f"Unauthorized access to post {post_id} by user {user_id}")
+        logger.error(f"Unauthorized access to post {post_id} by user {user_id}")
         raise PostNotAuthorizedException()
 
-    # 업데이트할 데이터 준비
+    return db_post
+
+
+def _prepare_post_update_data(post: PostUpdateReq) -> dict:
+    """게시글 업데이트를 위한 데이터를 준비합니다."""
     update_data = {}
     if post.title is not None:
         update_data["title"] = post.title
@@ -83,45 +79,63 @@ def update_post(
         update_data["thumbnail_url"] = post.thumbnail_url
     if post.publish is not None:
         update_data["is_draft"] = not post.publish
-
     logger.debug(f"Update data prepared: {list(update_data.keys())}")
+    return update_data
 
-    # 이미지 처리 (게시글 발행이 아니더라도 이미지 처리)
-    logger.info(f"Processing images for published post {post_id}")
 
-    # 임시 이미지를 실제 저장소로 이동
+def _process_post_images(
+    post_id: str, content: str, content_type: str
+) -> tuple[str, str]:
+    """게시글의 이미지를 처리하고 업데이트된 콘텐츠와 임베딩된 이미지 목록을 반환합니다."""
+    logger.info(f"Processing images for post {post_id}")
+
     updated_content, moved_files = move_temp_images_to_storage(
-        content=post.content,
-        content_type=post.content_type or db_post.content_type,
+        content=content,
+        content_type=content_type,
         post_id=post_id,
         temp_path=settings.STORAGE_TEMP_PATH,
-        storage_path=settings.STORAGE_POSTS_PATH
+        storage_path=settings.STORAGE_POSTS_PATH,
     )
+    logger.info(f"Moved {len(moved_files)} temp images to storage for post {post_id}")
 
-    logger.info(f"Moved {len(moved_files)} images to storage")
-
-    # content 업데이트
-    update_data["content"] = updated_content
-
-    # 임베딩된 이미지 목록 업데이트
     embedded_images = extract_embedded_images_from_content(
-        content=updated_content,
-        content_type=post.content_type or db_post.content_type
+        content=updated_content, content_type=content_type
     )
-    update_data["embedded_images"] = json.dumps(embedded_images)
+    logger.info(f"Found {len(embedded_images)} embedded images in post {post_id}")
 
-    logger.info(f"Found {len(embedded_images)} embedded images")
-
-    # 사용하지 않는 임시 이미지 정리
     deleted_files = cleanup_temp_images(
         content=updated_content,
-        content_type=post.content_type or db_post.content_type,
-        temp_path=settings.STORAGE_TEMP_PATH
+        content_type=content_type,
+        temp_path=settings.STORAGE_TEMP_PATH,
     )
+    logger.info(f"Cleaned up {len(deleted_files)} unused temp images for post {post_id}")
 
-    logger.info(f"Cleaned up {len(deleted_files)} unused temp images")
+    return updated_content, json.dumps(embedded_images)
 
-    # 게시글 업데이트
+
+def update_post(
+    db: Session,
+    post_id: str,
+    post: PostUpdateReq,
+    user_id: int,
+) -> PostUpdateRes:
+    repository = PostRepository(db)
+    logger.info(f"Updating post {post_id} by user {user_id}")
+
+    db_post = _validate_post_update_authorization(repository, user_id, post_id)
+
+    update_data = _prepare_post_update_data(post)
+
+    if post.content is not None:
+        content_type = post.content_type or db_post.content_type
+        updated_content, embedded_images_json = _process_post_images(
+            post_id=post_id,
+            content=post.content,
+            content_type=content_type,
+        )
+        update_data["content"] = updated_content
+        update_data["embedded_images"] = embedded_images_json
+
     updated_post = repository.update_post(db_post, update_data)
     logger.info(f"Successfully updated post {post_id}")
 
